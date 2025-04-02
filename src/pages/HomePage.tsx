@@ -20,12 +20,12 @@ export default function HomePage() {
   const navigate = useNavigate()
 
   const { state: globalStatsState } = useEtherstore({
-    contractAddress: "0xA7c71a2cf82Be08862Dde392706354DE2cc6e821",
+    contractAddress: "0xf2B7995571517951B158A9D534553d322356c716",
     path: ["getGlobalStats"],
   })
 
   const { state: globalInventoryStatsState } = useEtherstore({
-    contractAddress: "0xA7c71a2cf82Be08862Dde392706354DE2cc6e821",
+    contractAddress: "0xf2B7995571517951B158A9D534553d322356c716",
     path: ["getGlobalInventoryStats"],
   })
 

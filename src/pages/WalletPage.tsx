@@ -35,17 +35,17 @@ export default function WalletPage() {
   const { walletAddress } = useParams<{ walletAddress: string }>()
 
   const { state: userStatsState } = useEtherstore({
-    contractAddress: "0xA7c71a2cf82Be08862Dde392706354DE2cc6e821",
+    contractAddress: "0xf2B7995571517951B158A9D534553d322356c716",
     path: ["getUserStats", walletAddress ?? ""],
   })
 
   const { state: userInventoryStatsState } = useEtherstore({
-    contractAddress: "0xA7c71a2cf82Be08862Dde392706354DE2cc6e821",
+    contractAddress: "0xf2B7995571517951B158A9D534553d322356c716",
     path: ["getUserInventoryStats", walletAddress ?? ""],
   })
 
   const { state: inventoryState } = useEtherstore({
-    contractAddress: "0x0954Cc7f414725c7A7f20C458922F0A010Cf4301",
+    contractAddress: "0x2c0B61c15A6e6B05A23a8D3655D40eEE570eBEb9",
     path: ["getInventoryContents", walletAddress ?? ""],
   })
 
