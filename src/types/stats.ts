@@ -13,6 +13,7 @@ export interface BaseStats {
   totalPlaced: number
   totalCrafted: number
   totalDistance: number
+  totalPlayerUpdates: number
   minedBlockTypes: number[]
   minedBlocks: BlockCount[]
   minedCounts: number[]

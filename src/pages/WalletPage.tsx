@@ -35,19 +35,21 @@ export default function WalletPage() {
   const { walletAddress } = useParams<{ walletAddress: string }>()
 
   const { state: userStatsState } = useEtherstore({
-    contractAddress: "0xf2B7995571517951B158A9D534553d322356c716",
+    contractAddress: "0xfbbdeE4a2423C62e3A77eCFDfc5eCB1a16E51917",
     path: ["getUserStats", walletAddress ?? ""],
   })
 
   const { state: userInventoryStatsState } = useEtherstore({
-    contractAddress: "0xf2B7995571517951B158A9D534553d322356c716",
+    contractAddress: "0xfbbdeE4a2423C62e3A77eCFDfc5eCB1a16E51917",
     path: ["getUserInventoryStats", walletAddress ?? ""],
   })
 
   const { state: inventoryState } = useEtherstore({
-    contractAddress: "0x2c0B61c15A6e6B05A23a8D3655D40eEE570eBEb9",
+    contractAddress: "0xcc8FD63Cd11F94b815eA3161F45206dfcF408B1F",
     path: ["getInventoryContents", walletAddress ?? ""],
   })
+
+  console.log("userStatsState", userStatsState)
 
   // Extract user data from state
   const userData =
