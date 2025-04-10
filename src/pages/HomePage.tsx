@@ -20,13 +20,31 @@ export default function HomePage() {
   const navigate = useNavigate()
 
   const { state: globalStatsState } = useEtherstore({
-    contractAddress: "0xfbbdeE4a2423C62e3A77eCFDfc5eCB1a16E51917",
+    contractAddress: "0x802489124802e335123997AEB06605B06bD6A12f",
     path: ["getGlobalStats"],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "PlayerUpdated",
+          },
+        ],
+      },
+    },
   })
 
   const { state: globalInventoryStatsState } = useEtherstore({
-    contractAddress: "0xfbbdeE4a2423C62e3A77eCFDfc5eCB1a16E51917",
+    contractAddress: "0x802489124802e335123997AEB06605B06bD6A12f",
     path: ["getGlobalInventoryStats"],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "PlayerUpdated",
+          },
+        ],
+      },
+    },
   })
 
   console.log("globalStatsState", globalStatsState)

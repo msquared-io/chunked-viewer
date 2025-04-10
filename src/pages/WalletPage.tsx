@@ -35,18 +35,45 @@ export default function WalletPage() {
   const { walletAddress } = useParams<{ walletAddress: string }>()
 
   const { state: userStatsState } = useEtherstore({
-    contractAddress: "0xfbbdeE4a2423C62e3A77eCFDfc5eCB1a16E51917",
+    contractAddress: "0x802489124802e335123997AEB06605B06bD6A12f",
     path: ["getUserStats", walletAddress ?? ""],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "PlayerUpdated",
+          },
+        ],
+      },
+    },
   })
 
   const { state: userInventoryStatsState } = useEtherstore({
-    contractAddress: "0xfbbdeE4a2423C62e3A77eCFDfc5eCB1a16E51917",
+    contractAddress: "0x802489124802e335123997AEB06605B06bD6A12f",
     path: ["getUserInventoryStats", walletAddress ?? ""],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "PlayerUpdated",
+          },
+        ],
+      },
+    },
   })
 
   const { state: inventoryState } = useEtherstore({
-    contractAddress: "0xcc8FD63Cd11F94b815eA3161F45206dfcF408B1F",
+    contractAddress: "0xee10C818b65727b7BE02B66a15B57CbeCA760478",
     path: ["getInventoryContents", walletAddress ?? ""],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "PlayerUpdated",
+          },
+        ],
+      },
+    },
   })
 
   console.log("userStatsState", userStatsState)

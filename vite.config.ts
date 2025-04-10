@@ -11,7 +11,10 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {},
+  server: {
+    open: true,
+    port: 3000,
+  },
   build: {
     outDir: "dist",
     rollupOptions: {

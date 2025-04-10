@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@msquared/etherbase-client": "^0.0.0-next.20250401.ae8486d",
+    "@msquared/etherbase-client": "0.0.0-next.20250410.9b508b4",
     "@radix-ui/react-slot": "^1.1.2",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/vite": "^4.0.17",

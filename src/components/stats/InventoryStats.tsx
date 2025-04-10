@@ -5,13 +5,18 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import type { InventoryStats } from "../../types/stats"
+import type { InventoryStats, ItemCount } from "../../types/stats"
 import { blockTypeNames } from "../../constants/blockTypes"
 
 interface InventoryStatsProps {
   stats: InventoryStats
   title?: string
   description?: string
+}
+
+interface GroupedItem {
+  name: string
+  count: number
 }
 
 export function InventoryStats({
@@ -23,6 +28,23 @@ export function InventoryStats({
     const typeId = itemType & 0xffff
     return blockTypeNames[typeId] || `item ${typeId}`
   }
+
+  const groupItemsByName = (items: ItemCount[]): GroupedItem[] => {
+    const groupedMap = new Map<string, number>()
+
+    for (const item of items) {
+      const name = getItemName(item.itemType)
+      groupedMap.set(name, (groupedMap.get(name) || 0) + item.count)
+    }
+
+    return Array.from(groupedMap.entries()).map(([name, count]) => ({
+      name,
+      count,
+    }))
+  }
+
+  const groupedMintedItems = groupItemsByName(stats.mintedItems)
+  const groupedBurnedItems = groupItemsByName(stats.burnedItems)
 
   return (
     <Card className="col-span-full mt-6">
@@ -42,12 +64,12 @@ export function InventoryStats({
                 </p>
                 <p>{stats.totalMinted}</p>
               </div>
-              {stats.mintedItems.map((item) => (
+              {groupedMintedItems.map((item) => (
                 <div
-                  key={`minted-${item.itemType & 0xffff}`}
+                  key={`minted-${item.name}`}
                   className="flex justify-between items-center"
                 >
-                  <p className="font-medium">{getItemName(item.itemType)}</p>
+                  <p className="font-medium">{item.name}</p>
                   <p className="text-muted-foreground">{item.count}</p>
                 </div>
               ))}
@@ -64,13 +86,13 @@ export function InventoryStats({
                 </p>
                 <p>{stats.totalBurned}</p>
               </div>
-              {stats.burnedItems.length > 0 ? (
-                stats.burnedItems.map((item) => (
+              {groupedBurnedItems.length > 0 ? (
+                groupedBurnedItems.map((item) => (
                   <div
-                    key={`burned-${item.itemType & 0xffff}`}
+                    key={`burned-${item.name}`}
                     className="flex justify-between items-center"
                   >
-                    <p className="font-medium">{getItemName(item.itemType)}</p>
+                    <p className="font-medium">{item.name}</p>
                     <p className="text-muted-foreground">{item.count}</p>
                   </div>
                 ))
