@@ -7,6 +7,7 @@ import {
 } from "../ui/card"
 import type { InventoryStats, ItemCount } from "../../types/stats"
 import { blockTypeNames } from "../../constants/blockTypes"
+import { Link } from "react-router-dom"
 
 interface InventoryStatsProps {
   stats: InventoryStats
@@ -17,6 +18,7 @@ interface InventoryStatsProps {
 interface GroupedItem {
   name: string
   count: number
+  tokenId: number
 }
 
 export function InventoryStats({
@@ -30,17 +32,24 @@ export function InventoryStats({
   }
 
   const groupItemsByName = (items: ItemCount[]): GroupedItem[] => {
-    const groupedMap = new Map<string, number>()
+    const groupedMap = new Map<string, { count: number; tokenId: number }>()
 
     for (const item of items) {
       const name = getItemName(item.itemType)
-      groupedMap.set(name, (groupedMap.get(name) || 0) + item.count)
+      const typeId = item.itemType
+      groupedMap.set(name, {
+        count: (groupedMap.get(name)?.count || 0) + item.count,
+        tokenId: typeId,
+      })
     }
 
-    return Array.from(groupedMap.entries()).map(([name, count]) => ({
-      name,
-      count,
-    }))
+    return Array.from(groupedMap.entries()).map(
+      ([name, { count, tokenId }]) => ({
+        name,
+        count,
+        tokenId,
+      }),
+    )
   }
 
   const groupedMintedItems = groupItemsByName(stats.mintedItems)
@@ -69,7 +78,14 @@ export function InventoryStats({
                   key={`minted-${item.name}`}
                   className="flex justify-between items-center"
                 >
-                  <p className="font-medium">{item.name}</p>
+                  <a
+                    href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.tokenId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium hover:underline"
+                  >
+                    {item.name}
+                  </a>
                   <p className="text-muted-foreground">{item.count}</p>
                 </div>
               ))}
@@ -92,7 +108,14 @@ export function InventoryStats({
                     key={`burned-${item.name}`}
                     className="flex justify-between items-center"
                   >
-                    <p className="font-medium">{item.name}</p>
+                    <a
+                      href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.tokenId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium hover:underline"
+                    >
+                      {item.name}
+                    </a>
                     <p className="text-muted-foreground">{item.count}</p>
                   </div>
                 ))

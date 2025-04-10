@@ -212,10 +212,15 @@ export default function WalletPage() {
                           <div className="absolute inset-0 p-1.5">
                             <div className="w-full h-full flex items-center justify-center">
                               <div className="text-center">
-                                <p className="font-medium text-xs text-black/90 dark:text-black/80">
+                                <a
+                                  href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.itemId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-medium text-xs text-black/90 dark:text-black/80 hover:underline"
+                                >
                                   {blockTypeNames[item.itemId & 0xffff] ||
                                     `item ${item.itemId & 0xffff}`}
-                                </p>
+                                </a>
                               </div>
                             </div>
                             {item.amount > 1 && (
@@ -269,10 +274,15 @@ export default function WalletPage() {
                           <div className="absolute inset-0 p-1.5">
                             <div className="w-full h-full flex items-center justify-center">
                               <div className="text-center">
-                                <p className="font-medium text-xs text-black/90 dark:text-black/80">
+                                <a
+                                  href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.itemId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-medium text-xs text-black/90 dark:text-black/80 hover:underline"
+                                >
                                   {blockTypeNames[item.itemId & 0xffff] ||
                                     `item ${item.itemId & 0xffff}`}
-                                </p>
+                                </a>
                               </div>
                             </div>
                             {item.amount > 1 && (

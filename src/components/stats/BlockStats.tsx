@@ -19,6 +19,11 @@ export function BlockStats({ title, items }: BlockStatsProps) {
     return blockTypeNames[typeId] || `item ${typeId}`
   }
 
+  const getTokenId = (item: BlockCount | ItemCount): number => {
+    const type = "blockType" in item ? item.blockType : item.itemType
+    return type
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -32,7 +37,14 @@ export function BlockStats({ title, items }: BlockStatsProps) {
                 key={`${title}-${getItemKey(item)}`}
                 className="flex justify-between items-center"
               >
-                <p className="font-medium">{getItemName(item)}</p>
+                <a
+                  href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${getTokenId(item)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium hover:underline"
+                >
+                  {getItemName(item)}
+                </a>
                 <p className="text-muted-foreground">{item.count}</p>
               </div>
             ))

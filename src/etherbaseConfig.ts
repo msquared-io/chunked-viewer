@@ -1,6 +1,6 @@
 import type { EtherbaseConfig } from "@msquared/etherbase-client"
 
-const useLocalBackend = false
+const useLocalBackend = true
 const localUrl = "http://localhost"
 
 export const etherbaseConfig: EtherbaseConfig = {
