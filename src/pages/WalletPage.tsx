@@ -35,13 +35,13 @@ export default function WalletPage() {
   const { walletAddress } = useParams<{ walletAddress: string }>()
 
   const { state: userStatsState } = useEtherstore({
-    contractAddress: "0x802489124802e335123997AEB06605B06bD6A12f",
+    contractAddress: "0x33369304d80935d3cCdA0b00DE544526688c9Daf",
     path: ["getUserStats", walletAddress ?? ""],
     options: {
       repoll: {
         listenEvents: [
           {
-            name: "PlayerUpdated",
+            name: "GlobalCounterUpdated",
           },
         ],
       },
@@ -49,13 +49,13 @@ export default function WalletPage() {
   })
 
   const { state: userInventoryStatsState } = useEtherstore({
-    contractAddress: "0x802489124802e335123997AEB06605B06bD6A12f",
+    contractAddress: "0x33369304d80935d3cCdA0b00DE544526688c9Daf",
     path: ["getUserInventoryStats", walletAddress ?? ""],
     options: {
       repoll: {
         listenEvents: [
           {
-            name: "PlayerUpdated",
+            name: "GlobalCounterUpdated",
           },
         ],
       },
@@ -63,13 +63,19 @@ export default function WalletPage() {
   })
 
   const { state: inventoryState } = useEtherstore({
-    contractAddress: "0xee10C818b65727b7BE02B66a15B57CbeCA760478",
+    contractAddress: "0x42ee6f3Ef643524d3184BB6BF68763C8F966E84F",
     path: ["getInventoryContents", walletAddress ?? ""],
     options: {
       repoll: {
         listenEvents: [
           {
-            name: "PlayerUpdated",
+            name: "ItemMoved",
+          },
+          {
+            name: "ItemAdded",
+          },
+          {
+            name: "ItemRemoved",
           },
         ],
       },
