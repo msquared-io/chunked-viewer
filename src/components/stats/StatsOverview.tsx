@@ -57,13 +57,17 @@ export function StatsOverview({
               <p className="text-sm font-medium text-muted-foreground">
                 total distance
               </p>
-              <p className="text-sm font-medium">{stats.totalDistance} m</p>
+              <p className="text-sm font-medium">
+                {stats.totalDistance.toLocaleString()} m
+              </p>
             </div>
             <div className="flex justify-between gap-8">
               <p className="text-sm font-medium text-muted-foreground">
                 total updates
               </p>
-              <p className="text-sm font-medium">{stats.totalPlayerUpdates}</p>
+              <p className="text-sm font-medium">
+                {stats.totalPlayerUpdates.toLocaleString()}
+              </p>
             </div>
           </div>
         </div>

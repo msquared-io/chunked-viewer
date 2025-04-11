@@ -19,6 +19,6 @@ export const etherbaseConfig: EtherbaseConfig = {
   debug: false,
   // optimized: {
   //   enabled: true,
-  //   streamingCompression: true,
+  //   streamingCompression: false,
   // },
 }
