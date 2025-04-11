@@ -7,7 +7,6 @@ import {
 } from "../ui/card"
 import type { InventoryStats, ItemCount } from "../../types/stats"
 import { blockTypeNames } from "../../constants/blockTypes"
-import { Link } from "react-router-dom"
 
 interface InventoryStatsProps {
   stats: InventoryStats
