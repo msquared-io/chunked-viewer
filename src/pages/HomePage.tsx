@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Input } from "../components/ui/input"
 import { Button } from "../components/ui/button"
@@ -26,28 +26,34 @@ interface GlobalCounterEvent extends EtherbaseEvent {
   }
 }
 
+interface GlobalCounter {
+  totalCount: bigint
+  lastUpdateTimestamp: bigint
+}
+
 export default function HomePage() {
   const [walletAddress, setWalletAddress] = useState("")
-  const [totalCount, setTotalCount] = useState<number>(0)
-  const [lastUpdateTimestamp, setLastUpdateTimestamp] = useState<number>(0)
   const navigate = useNavigate()
 
-  const handleGlobalCounterUpdate = useCallback((event: EtherbaseEvent) => {
-    const { totalCount, lastUpdateTimestamp } = (event as GlobalCounterEvent)
-      .args
-    setTotalCount(Number(totalCount))
-    setLastUpdateTimestamp(Number(lastUpdateTimestamp))
-  }, [])
-
-  useEtherbaseEvents({
+  const { state: globalCounterState } = useEtherstore({
     contractAddress: "0x33369304d80935d3cCdA0b00DE544526688c9Daf",
-    events: [
-      {
-        name: "GlobalCounterUpdated",
+    path: ["getGlobalCount"],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "GlobalCounterUpdated",
+          },
+        ],
       },
-    ],
-    onEvent: handleGlobalCounterUpdate,
+    },
   })
+
+  console.log("globalCounterState", globalCounterState)
+
+  const globalCounter = (
+    globalCounterState as unknown as { getGlobalCount: GlobalCounter }
+  )?.getGlobalCount
 
   const { state: globalStatsState } = useEtherstore({
     contractAddress: "0x33369304d80935d3cCdA0b00DE544526688c9Daf",
@@ -134,11 +140,13 @@ export default function HomePage() {
               <div className="text-center">
                 <h2 className="text-2xl font-bold mb-2">All Transactions</h2>
                 <p className="text-5xl font-bold text-primary mb-2">
-                  {totalCount.toLocaleString()}
+                  {Number(globalCounter?.totalCount || 0).toLocaleString()}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Last updated:{" "}
-                  {new Date(lastUpdateTimestamp * 1000).toLocaleString()}
+                  {new Date(
+                    Number(globalCounter?.lastUpdateTimestamp || 0) * 1000,
+                  ).toLocaleString()}
                 </p>
               </div>
             </CardContent>
