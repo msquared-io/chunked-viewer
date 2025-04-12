@@ -9,22 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card"
-import {
-  useEtherbaseEvents,
-  useEtherstore,
-  type EtherbaseEvent,
-} from "@msquared/etherbase-client"
+import { useEtherstore } from "@msquared/etherbase-client"
 import type { GlobalStats, GlobalInventoryStats } from "../types/stats"
 import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
-
-interface GlobalCounterEvent extends EtherbaseEvent {
-  args: {
-    totalCount: bigint
-    lastUpdateTimestamp: bigint
-  }
-}
 
 interface GlobalCounter {
   totalCount: bigint
