@@ -32,22 +32,24 @@ export function BlockStats({ title, items }: BlockStatsProps) {
       <CardContent>
         <div className="space-y-4">
           {items.length > 0 ? (
-            items.map((item) => (
-              <div
-                key={`${title}-${getItemKey(item)}`}
-                className="flex justify-between items-center"
-              >
-                <a
-                  href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${getTokenId(item)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium hover:underline"
+            [...items]
+              .sort((a, b) => b.count - a.count)
+              .map((item) => (
+                <div
+                  key={`${title}-${getItemKey(item)}`}
+                  className="flex justify-between items-center"
                 >
-                  {getItemName(item)}
-                </a>
-                <p className="text-muted-foreground">{item.count}</p>
-              </div>
-            ))
+                  <a
+                    href={`https://shannon-explorer.somnia.network/token/0x42ee6f3Ef643524d3184BB6BF68763C8F966E84F/instance/${getTokenId(item)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium hover:underline"
+                  >
+                    {getItemName(item)}
+                  </a>
+                  <p className="text-muted-foreground">{item.count}</p>
+                </div>
+              ))
           ) : (
             <p className="text-muted-foreground">no items yet</p>
           )}

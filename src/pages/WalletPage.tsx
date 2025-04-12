@@ -142,7 +142,7 @@ export default function WalletPage() {
 
             <BlockStats title="collected items" items={userData.minedBlocks} />
             <BlockStats title="placed items" items={userData.placedBlocks} />
-            <BlockStats title="created items" items={userData.craftedItems} />
+            <BlockStats title="crafted items" items={userData.craftedItems} />
 
             {/* Item Type Distribution */}
             <Card>
@@ -215,14 +215,14 @@ export default function WalletPage() {
                         className={`aspect-square ${item ? "bg-black/5 dark:bg-white/90" : "bg-black/10 dark:bg-white/75"} hover:bg-black/10 dark:hover:bg-white/80 rounded-lg shadow-sm relative group transition-all duration-200 p-0.5`}
                       >
                         {item ? (
-                          <div className="absolute inset-0 p-1.5">
-                            <div className="w-full h-full flex items-center justify-center">
-                              <div className="text-center">
+                          <div className="absolute inset-0 p-0.5">
+                            <div className="w-full h-full flex items-center justify-center -space-y-1">
+                              <div className="text-center leading-[0.75]">
                                 <a
-                                  href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.itemId}`}
+                                  href={`https://shannon-explorer.somnia.network/token/0x42ee6f3Ef643524d3184BB6BF68763C8F966E84F/instance/${item.itemId}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="font-medium text-xs text-black/90 dark:text-black/80 hover:underline"
+                                  className="font-medium text-[9px] text-black/90 dark:text-black/80 hover:underline"
                                 >
                                   {blockTypeNames[item.itemId & 0xffff] ||
                                     `item ${item.itemId & 0xffff}`}
@@ -230,7 +230,7 @@ export default function WalletPage() {
                               </div>
                             </div>
                             {item.amount > 1 && (
-                              <span className="absolute bottom-1 right-1.5 text-xs font-medium text-black/70 dark:text-black/80">
+                              <span className="absolute bottom-1 right-1.5 text-[8px] font-medium text-black/70 dark:text-black/80">
                                 {item.amount}
                               </span>
                             )}
@@ -277,14 +277,14 @@ export default function WalletPage() {
                         className={`aspect-square ${item ? "bg-black/5 dark:bg-white/90" : "bg-black/10 dark:bg-white/75"} hover:bg-black/10 dark:hover:bg-white/80 rounded-lg shadow-sm relative group transition-all duration-200 p-0.5`}
                       >
                         {item ? (
-                          <div className="absolute inset-0 p-1.5">
-                            <div className="w-full h-full flex items-center justify-center">
-                              <div className="text-center">
+                          <div className="absolute inset-0 p-0.5">
+                            <div className="w-full h-full flex items-center justify-center -space-y-1">
+                              <div className="text-center leading-[0.75]">
                                 <a
-                                  href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.itemId}`}
+                                  href={`https://shannon-explorer.somnia.network/token/0x42ee6f3Ef643524d3184BB6BF68763C8F966E84F/instance/${item.itemId}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="font-medium text-xs text-black/90 dark:text-black/80 hover:underline"
+                                  className="font-medium text-[9px] text-black/90 dark:text-black/80 hover:underline"
                                 >
                                   {blockTypeNames[item.itemId & 0xffff] ||
                                     `item ${item.itemId & 0xffff}`}
@@ -292,7 +292,7 @@ export default function WalletPage() {
                               </div>
                             </div>
                             {item.amount > 1 && (
-                              <span className="absolute bottom-1 right-1.5 text-xs font-medium text-black/70 dark:text-black/80">
+                              <span className="absolute bottom-1 right-1.5 text-[8px] font-medium text-black/70 dark:text-black/80">
                                 {item.amount}
                               </span>
                             )}

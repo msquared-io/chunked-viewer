@@ -72,22 +72,24 @@ export function InventoryStats({
                 </p>
                 <p>{stats.totalMinted}</p>
               </div>
-              {groupedMintedItems.map((item) => (
-                <div
-                  key={`minted-${item.name}`}
-                  className="flex justify-between items-center"
-                >
-                  <a
-                    href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.tokenId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium hover:underline"
+              {[...groupedMintedItems]
+                .sort((a, b) => b.count - a.count)
+                .map((item) => (
+                  <div
+                    key={`minted-${item.name}`}
+                    className="flex justify-between items-center"
                   >
-                    {item.name}
-                  </a>
-                  <p className="text-muted-foreground">{item.count}</p>
-                </div>
-              ))}
+                    <a
+                      href={`https://shannon-explorer.somnia.network/token/0x42ee6f3Ef643524d3184BB6BF68763C8F966E84F/instance/${item.tokenId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium hover:underline"
+                    >
+                      {item.name}
+                    </a>
+                    <p className="text-muted-foreground">{item.count}</p>
+                  </div>
+                ))}
             </div>
           </div>
 
@@ -102,22 +104,24 @@ export function InventoryStats({
                 <p>{stats.totalBurned}</p>
               </div>
               {groupedBurnedItems.length > 0 ? (
-                groupedBurnedItems.map((item) => (
-                  <div
-                    key={`burned-${item.name}`}
-                    className="flex justify-between items-center"
-                  >
-                    <a
-                      href={`https://shannon-explorer.somnia.network/token/0xee10C818b65727b7BE02B66a15B57CbeCA760478/instance/${item.tokenId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-medium hover:underline"
+                [...groupedBurnedItems]
+                  .sort((a, b) => b.count - a.count)
+                  .map((item) => (
+                    <div
+                      key={`burned-${item.name}`}
+                      className="flex justify-between items-center"
                     >
-                      {item.name}
-                    </a>
-                    <p className="text-muted-foreground">{item.count}</p>
-                  </div>
-                ))
+                      <a
+                        href={`https://shannon-explorer.somnia.network/token/0x42ee6f3Ef643524d3184BB6BF68763C8F966E84F/instance/${item.tokenId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium hover:underline"
+                      >
+                        {item.name}
+                      </a>
+                      <p className="text-muted-foreground">{item.count}</p>
+                    </div>
+                  ))
               ) : (
                 <p className="text-muted-foreground">no items burned yet</p>
               )}

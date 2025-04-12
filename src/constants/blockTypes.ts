@@ -9,5 +9,14 @@ export const blockTypeNames: Record<number, string> = {
   280: "stick",
   270: "wooden pickaxe",
   274: "stone pickaxe",
+  10: "lava",
+  11: "lava",
+  21: "lapis lazuli ore",
+  14: "gold ore",
+  15: "iron ore",
+  16: "coal ore",
+  31: "grass",
+  13: "gravel",
+  263: "coal",
   // Add more block types as needed
 }
