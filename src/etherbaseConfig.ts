@@ -22,3 +22,7 @@ export const etherbaseConfig: EtherbaseConfig = {
   //   streamingCompression: false,
   // },
 }
+
+export const userStatsContract1 = "0x33369304d80935d3cCdA0b00DE544526688c9Daf"
+export const inventoryContract = "0x42ee6f3Ef643524d3184BB6BF68763C8F966E84F"
+export const userStatsContract2 = "0xa22C39134a8Fa95fF40e8270f45Fc7cF5daA4254"

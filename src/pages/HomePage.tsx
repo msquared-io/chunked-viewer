@@ -10,22 +10,60 @@ import {
   CardTitle,
 } from "../components/ui/card"
 import { useEtherstore } from "@msquared/etherbase-client"
-import type { GlobalStats, GlobalInventoryStats } from "../types/stats"
+import type {
+  GlobalStats,
+  GlobalInventoryStats,
+  BlockCount,
+  ItemCount,
+} from "../types/stats"
 import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
+import {
+  userStatsContract1,
+  userStatsContract2,
+  inventoryContract,
+} from "../etherbaseConfig"
+import { deepMerge } from "../utils/mergeStats"
 
 interface GlobalCounter {
   totalCount: bigint
   lastUpdateTimestamp: bigint
 }
 
+type CountItem = BlockCount | ItemCount
+
+// Generic type guard for arrays
+function isArray(value: unknown): value is unknown[] {
+  return Array.isArray(value)
+}
+
+// Type guard for CountItem arrays
+function isCountItemArray(value: unknown): value is CountItem[] {
+  return (
+    isArray(value) &&
+    value.length > 0 &&
+    (("blockType" in (value[0] as object) && "count" in (value[0] as object)) ||
+      ("itemType" in (value[0] as object) && "count" in (value[0] as object)))
+  )
+}
+
+// Type guard for number arrays
+function isNumberArray(value: unknown): value is number[] {
+  return isArray(value) && value.length > 0 && typeof value[0] === "number"
+}
+
+// Type guard for bigint
+function isBigInt(value: unknown): value is bigint {
+  return typeof value === "bigint"
+}
+
 export default function HomePage() {
   const [walletAddress, setWalletAddress] = useState("")
   const navigate = useNavigate()
 
-  const { state: globalCounterState } = useEtherstore({
-    contractAddress: "0x33369304d80935d3cCdA0b00DE544526688c9Daf",
+  const { state: globalCounterState1 } = useEtherstore({
+    contractAddress: userStatsContract1,
     path: ["getGlobalCount"],
     options: {
       repoll: {
@@ -38,14 +76,44 @@ export default function HomePage() {
     },
   })
 
-  console.log("globalCounterState", globalCounterState)
+  const { state: globalCounterState2 } = useEtherstore({
+    contractAddress: userStatsContract2,
+    path: ["getGlobalCount"],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "GlobalCounterUpdated",
+          },
+        ],
+      },
+    },
+  })
 
-  const globalCounter = (
-    globalCounterState as unknown as { getGlobalCount: GlobalCounter }
+  const globalCounter1 = (
+    globalCounterState1 as unknown as { getGlobalCount: GlobalCounter }
   )?.getGlobalCount
+  const globalCounter2 = (
+    globalCounterState2 as unknown as { getGlobalCount: GlobalCounter }
+  )?.getGlobalCount
+  const globalCounter = deepMerge(globalCounter1, globalCounter2)
 
-  const { state: globalStatsState } = useEtherstore({
-    contractAddress: "0x33369304d80935d3cCdA0b00DE544526688c9Daf",
+  const { state: globalStatsState1 } = useEtherstore({
+    contractAddress: userStatsContract1,
+    path: ["getGlobalStats"],
+    options: {
+      repoll: {
+        listenEvents: [
+          {
+            name: "GlobalCounterUpdated",
+          },
+        ],
+      },
+    },
+  })
+
+  const { state: globalStatsState2 } = useEtherstore({
+    contractAddress: userStatsContract2,
     path: ["getGlobalStats"],
     options: {
       repoll: {
@@ -59,7 +127,7 @@ export default function HomePage() {
   })
 
   const { state: globalInventoryStatsState } = useEtherstore({
-    contractAddress: "0x33369304d80935d3cCdA0b00DE544526688c9Daf",
+    contractAddress: inventoryContract,
     path: ["getGlobalInventoryStats"],
     options: {
       repoll: {
@@ -72,18 +140,24 @@ export default function HomePage() {
     },
   })
 
-  console.log("globalStatsState", globalStatsState)
+  console.log("globalStatsState1", globalStatsState1)
+  console.log("globalStatsState2", globalStatsState2)
   console.log("globalInventoryStatsState", globalInventoryStatsState)
 
-  // Cast the state to our interface types
-  const globalStats = (
-    globalStatsState as unknown as { getGlobalStats: GlobalStats }
-  ).getGlobalStats
+  // Cast and merge the states to our interface types
+  const globalStats1 = (
+    globalStatsState1 as unknown as { getGlobalStats: GlobalStats }
+  )?.getGlobalStats
+  const globalStats2 = (
+    globalStatsState2 as unknown as { getGlobalStats: GlobalStats }
+  )?.getGlobalStats
+  const globalStats = deepMerge(globalStats1, globalStats2)
+
   const globalInventoryStats = (
     globalInventoryStatsState as unknown as {
       getGlobalInventoryStats: GlobalInventoryStats
     }
-  ).getGlobalInventoryStats
+  )?.getGlobalInventoryStats
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
