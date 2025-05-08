@@ -10,12 +10,7 @@ import {
   CardTitle,
 } from "../components/ui/card"
 import { useEtherstore } from "@msquared/etherbase-client"
-import type {
-  GlobalStats,
-  GlobalInventoryStats,
-  BlockCount,
-  ItemCount,
-} from "../types/stats"
+import type { GlobalStats, GlobalInventoryStats } from "../types/stats"
 import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
@@ -29,33 +24,6 @@ import { deepMerge } from "../utils/mergeStats"
 interface GlobalCounter {
   totalCount: bigint
   lastUpdateTimestamp: bigint
-}
-
-type CountItem = BlockCount | ItemCount
-
-// Generic type guard for arrays
-function isArray(value: unknown): value is unknown[] {
-  return Array.isArray(value)
-}
-
-// Type guard for CountItem arrays
-function isCountItemArray(value: unknown): value is CountItem[] {
-  return (
-    isArray(value) &&
-    value.length > 0 &&
-    (("blockType" in (value[0] as object) && "count" in (value[0] as object)) ||
-      ("itemType" in (value[0] as object) && "count" in (value[0] as object)))
-  )
-}
-
-// Type guard for number arrays
-function isNumberArray(value: unknown): value is number[] {
-  return isArray(value) && value.length > 0 && typeof value[0] === "number"
-}
-
-// Type guard for bigint
-function isBigInt(value: unknown): value is bigint {
-  return typeof value === "bigint"
 }
 
 export default function HomePage() {
