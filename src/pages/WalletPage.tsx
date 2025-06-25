@@ -13,12 +13,9 @@ import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
 import { blockTypeNames } from "../constants/blockTypes"
-import {
-  userStatsContract1,
-  userStatsContract2,
-  inventoryContract,
-} from "../etherbaseConfig"
 import { deepMerge } from "../utils/mergeStats"
+import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
+import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
 
 interface InventoryItem {
   slot: number
@@ -39,22 +36,8 @@ interface InventoryData {
 export default function WalletPage() {
   const { walletAddress } = useParams<{ walletAddress: string }>()
 
-  const { state: userStatsState1 } = useEtherstore({
-    contractAddress: userStatsContract1,
-    path: ["getUserStats", walletAddress ?? ""],
-    options: {
-      repoll: {
-        listenEvents: [
-          {
-            name: "GlobalCounterUpdated",
-          },
-        ],
-      },
-    },
-  })
-
-  const { state: userStatsState2 } = useEtherstore({
-    contractAddress: userStatsContract2,
+  const { state: userStatsState } = useEtherstore({
+    contractAddress: UserStatsSystemAddress,
     path: ["getUserStats", walletAddress ?? ""],
     options: {
       repoll: {
@@ -68,7 +51,7 @@ export default function WalletPage() {
   })
 
   const { state: userInventoryStatsState } = useEtherstore({
-    contractAddress: inventoryContract,
+    contractAddress: InventorySystemAddress,
     path: ["getUserInventoryStats", walletAddress ?? ""],
     options: {
       repoll: {
@@ -82,7 +65,7 @@ export default function WalletPage() {
   })
 
   const { state: inventoryState } = useEtherstore({
-    contractAddress: inventoryContract,
+    contractAddress: InventorySystemAddress,
     path: ["getInventoryContents", walletAddress ?? ""],
     options: {
       repoll: {
@@ -102,23 +85,26 @@ export default function WalletPage() {
   })
 
   // Extract and merge user data from both states
-  const userData1 =
-    walletAddress && walletAddress !== ""
-      ? (
-          userStatsState1 as unknown as {
-            getUserStats: { [key: string]: UserStats }
-          }
-        )?.getUserStats?.[walletAddress]
-      : undefined
-  const userData2 =
-    walletAddress && walletAddress !== ""
-      ? (
-          userStatsState2 as unknown as {
-            getUserStats: { [key: string]: UserStats }
-          }
-        )?.getUserStats?.[walletAddress]
-      : undefined
-  const userData = deepMerge(userData1, userData2)
+  // const userData1 =
+  //   walletAddress && walletAddress !== ""
+  //     ? (
+  //         userStatsState1 as unknown as {
+  //           getUserStats: { [key: string]: UserStats }
+  //         }
+  //       )?.getUserStats?.[walletAddress]
+  //     : undefined
+  // const userData2 =
+  //   walletAddress && walletAddress !== ""
+  //     ? (
+  //         userStatsState2 as unknown as {
+  //           getUserStats: { [key: string]: UserStats }
+  //         }
+  //       )?.getUserStats?.[walletAddress]
+  //     : undefined
+  // const userData = deepMerge(userData1, userData2)
+  const userData = userStatsState as unknown as {
+    getUserStats: { [key: string]: UserStats }
+  }
 
   const userInventoryData =
     walletAddress &&

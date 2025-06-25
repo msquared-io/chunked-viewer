@@ -14,24 +14,40 @@ import type { GlobalStats, GlobalInventoryStats } from "../types/stats"
 import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
-import {
-  userStatsContract1,
-  userStatsContract2,
-  inventoryContract,
-} from "../etherbaseConfig"
 import { deepMerge } from "../utils/mergeStats"
+import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
+import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
 
 interface GlobalCounter {
   totalCount: bigint
   lastUpdateTimestamp: bigint
 }
 
+function decodeValue(value: string) {
+  if (typeof value !== "string") {
+    return value
+  }
+  // Decode Base64 to bytes using browser-compatible method
+  const valueString = atob(value)
+  const valueBytes = new Uint8Array(valueString.length)
+  for (let j = 0; j < valueString.length; j++) {
+    valueBytes[j] = valueString.charCodeAt(j)
+  }
+  
+  // Convert bytes to BigInt
+  let result = 0n;
+  for (const byte of valueBytes) {
+    result = (result << 8n) | BigInt(byte);
+  }
+  return result
+}
+
 export default function HomePage() {
   const [walletAddress, setWalletAddress] = useState("")
   const navigate = useNavigate()
 
-  const { state: globalCounterState1 } = useEtherstore({
-    contractAddress: userStatsContract1,
+  const { state: globalCounterState } = useEtherstore({
+    contractAddress: UserStatsSystemAddress,
     path: ["getGlobalCount"],
     options: {
       repoll: {
@@ -44,30 +60,12 @@ export default function HomePage() {
     },
   })
 
-  const { state: globalCounterState2 } = useEtherstore({
-    contractAddress: userStatsContract2,
-    path: ["getGlobalCount"],
-    options: {
-      repoll: {
-        listenEvents: [
-          {
-            name: "GlobalCounterUpdated",
-          },
-        ],
-      },
-    },
-  })
-
-  const globalCounter1 = (
-    globalCounterState1 as unknown as { getGlobalCount: GlobalCounter }
+  const globalCounter = (
+    globalCounterState as unknown as { getGlobalCount: GlobalCounter }
   )?.getGlobalCount
-  const globalCounter2 = (
-    globalCounterState2 as unknown as { getGlobalCount: GlobalCounter }
-  )?.getGlobalCount
-  const globalCounter = deepMerge(globalCounter1, globalCounter2)
 
-  const { state: globalStatsState1 } = useEtherstore({
-    contractAddress: userStatsContract1,
+  const { state: globalStatsState } = useEtherstore({
+    contractAddress: UserStatsSystemAddress,
     path: ["getGlobalStats"],
     options: {
       repoll: {
@@ -80,22 +78,9 @@ export default function HomePage() {
     },
   })
 
-  const { state: globalStatsState2 } = useEtherstore({
-    contractAddress: userStatsContract2,
-    path: ["getGlobalStats"],
-    options: {
-      repoll: {
-        listenEvents: [
-          {
-            name: "GlobalCounterUpdated",
-          },
-        ],
-      },
-    },
-  })
 
   const { state: globalInventoryStatsState } = useEtherstore({
-    contractAddress: inventoryContract,
+    contractAddress: InventorySystemAddress,
     path: ["getGlobalInventoryStats"],
     options: {
       repoll: {
@@ -108,18 +93,13 @@ export default function HomePage() {
     },
   })
 
-  console.log("globalStatsState1", globalStatsState1)
-  console.log("globalStatsState2", globalStatsState2)
+  console.log("globalStatsState", globalStatsState)
   console.log("globalInventoryStatsState", globalInventoryStatsState)
 
   // Cast and merge the states to our interface types
-  const globalStats1 = (
-    globalStatsState1 as unknown as { getGlobalStats: GlobalStats }
+  const globalStats = (
+    globalStatsState as unknown as { getGlobalStats: GlobalStats }
   )?.getGlobalStats
-  const globalStats2 = (
-    globalStatsState2 as unknown as { getGlobalStats: GlobalStats }
-  )?.getGlobalStats
-  const globalStats = deepMerge(globalStats1, globalStats2)
 
   const globalInventoryStats = (
     globalInventoryStatsState as unknown as {
@@ -171,12 +151,12 @@ export default function HomePage() {
               <div className="text-center">
                 <h2 className="text-2xl font-bold mb-2">All Transactions</h2>
                 <p className="text-5xl font-bold text-primary mb-2">
-                  {Number(globalCounter?.totalCount || 0).toLocaleString()}
+                  {decodeValue(globalCounter?.totalCount.toString())}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Last updated:{" "}
                   {new Date(
-                    Number(globalCounter?.lastUpdateTimestamp || 0) * 1000,
+                    Number(decodeValue(globalCounter?.lastUpdateTimestamp.toString()) || 0) * 1000,
                   ).toLocaleString()}
                 </p>
               </div>
