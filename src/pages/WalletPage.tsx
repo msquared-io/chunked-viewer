@@ -13,7 +13,7 @@ import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
 import { blockTypeNames } from "../constants/blockTypes"
-import { deepMerge } from "../utils/mergeStats"
+
 import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
 import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
 
@@ -102,9 +102,11 @@ export default function WalletPage() {
   //       )?.getUserStats?.[walletAddress]
   //     : undefined
   // const userData = deepMerge(userData1, userData2)
-  const userData = userStatsState as unknown as {
-    getUserStats: { [key: string]: UserStats }
-  }
+  const userData = walletAddress && walletAddress !== ""
+    ? (userStatsState as unknown as {
+        getUserStats: { [key: string]: UserStats }
+      })?.getUserStats?.[walletAddress]
+    : undefined
 
   const userInventoryData =
     walletAddress &&

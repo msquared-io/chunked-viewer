@@ -1,5 +1,6 @@
-import React, { useCallback } from "react"
+// @ts-ignore
 import {
+  useCallback,
   type ReactNode,
   useEffect,
   useState,
@@ -150,7 +151,7 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
     null,
   )
   const walletAddress = useMemo(() => wallet?.address as Address, [wallet])
-  const [walletLoading, setWalletLoading] = useState(false)
+  const [walletLoading] = useState(false)
   const [walletLoaded, setWalletLoaded] = useState(false)
   const { createGuestAccount } = useGuestAccounts()
 
@@ -329,7 +330,8 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
       const walletClient = createWalletClient({
         account: walletAddress,
         chain: dreamChain,
-        transport: custom(window.ethereum),
+        // @ts-ignore
+        transport: custom((window as any).ethereum),
       })
       console.log("signed eoa data", {
         domain: params.domain,
@@ -373,7 +375,6 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
   }, [ethereumWallet, embeddedWallet])
 
   const {
-    loggedIn,
     loginState,
     error,
     login,
@@ -386,7 +387,7 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
     ...loginCallbacks,
     autoLogin: false,
     ready: walletsReady && !!privy.user && providerIsReadyIfNeeded,
-    signTypedData,
+    signTypedData: signTypedData || (async () => ""),
   })
 
   // Handle auto login manually to avoid circular dependencies

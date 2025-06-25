@@ -94,7 +94,7 @@ export function DialogTitle({ children }: DialogTitleProps) {
 
 export function DialogTrigger({ asChild, children, onClick }: DialogTriggerProps) {
   if (asChild) {
-    return React.cloneElement(children as React.ReactElement, { onClick })
+    return React.cloneElement(children as React.ReactElement, { onClick } as React.HTMLAttributes<HTMLElement>)
   }
   
   return (

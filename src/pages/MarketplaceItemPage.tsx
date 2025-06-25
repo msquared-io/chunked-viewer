@@ -62,7 +62,7 @@ export default function MarketplaceItemPage() {
 
   // Session balance state
   const [sessionBalance, setSessionBalance] = useState<bigint | null>(null)
-  const [isLoadingBalance, setIsLoadingBalance] = useState(false)
+  const [, setIsLoadingBalance] = useState(false)
 
   // Use the etherbase session hook
   const { 

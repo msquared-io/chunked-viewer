@@ -14,7 +14,7 @@ import type { GlobalStats, GlobalInventoryStats } from "../types/stats"
 import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
-import { deepMerge } from "../utils/mergeStats"
+
 import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
 import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
 
