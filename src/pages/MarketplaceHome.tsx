@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useEtherstore } from "@msquared/etherbase-client"
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
+import { Card, CardContent } from "../components/ui/card"
 import { Input } from "../components/ui/input"
 import { Button } from "../components/ui/button"
 import { MarketplaceHeader } from "../components/marketplace/MarketplaceHeader"
@@ -10,7 +10,6 @@ import { Particles } from "../components/magicui/particles"
 import { useSession } from "@/providers/SessionProvider"
 import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
 import { blockTypeNames, blockImages } from "@/constants/blockTypes"
-import { formatNumber } from "@/lib/utils"
 
 interface MarketplaceItem {
   id: number
