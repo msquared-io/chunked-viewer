@@ -181,7 +181,7 @@ export default function WalletPage() {
                     </p>
                     <p className="font-bold">
                       {userData.minedBlocks.length > 0
-                        ? `${blockTypeNames[userData.minedBlocks[0].blockType & 0xffff] || `item ${userData.minedBlocks[0].blockType & 0xffff}`} (${userData.minedBlocks[0].count})`
+                        ? `${blockTypeNames[userData.minedBlocks[0].blockType & 0x3ff] || `item ${userData.minedBlocks[0].blockType & 0x3ff}`} (${userData.minedBlocks[0].count})`
                         : "none"}
                     </p>
                   </div>
@@ -239,8 +239,8 @@ export default function WalletPage() {
                                   rel="noopener noreferrer"
                                   className="font-medium text-[9px] text-black/90 dark:text-black/80 hover:underline"
                                 >
-                                  {blockTypeNames[item.itemId & 0xffff] ||
-                                    `item ${item.itemId & 0xffff}`}
+                                  {blockTypeNames[item.itemId & 0x3ff] ||
+                                    `item ${item.itemId & 0x3ff}`}
                                 </a>
                               </div>
                             </div>
@@ -301,8 +301,8 @@ export default function WalletPage() {
                                   rel="noopener noreferrer"
                                   className="font-medium text-[9px] text-black/90 dark:text-black/80 hover:underline"
                                 >
-                                  {blockTypeNames[item.itemId & 0xffff] ||
-                                    `item ${item.itemId & 0xffff}`}
+                                  {blockTypeNames[item.itemId & 0x3ff] ||
+                                    `item ${item.itemId & 0x3ff}`}
                                 </a>
                               </div>
                             </div>

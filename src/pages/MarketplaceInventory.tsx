@@ -1,16 +1,18 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useEtherstore, useContract } from "@msquared/etherbase-client"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Input } from "../components/ui/input"
 import { AnimatedButton } from "../components/ui/animated-button"
 import { useTransactionToast } from "@/hooks/useTransactionToast"
 import { MarketplaceHeader } from "../components/marketplace/MarketplaceHeader"
+import { Particles } from "../components/magicui/particles"
 import { useSession } from "@/providers/SessionProvider"
 import { MarketplaceAddress } from "@/contracts/MarketplaceAddress"
 import { MarketplaceAbi } from "@/contracts/MarketplaceAbi"
 import { blockTypeNames, blockImages } from "@/constants/blockTypes"
 import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
 import { formatNumber } from "@/lib/utils"
+
 
 // Real inventory item type from the contract
 interface InventoryItem {
@@ -76,6 +78,22 @@ export default function MarketplaceInventory() {
   const [selectedItem, setSelectedItem] = useState<MarketplaceInventoryItem | null>(null)
   const [sellQuantity, setSellQuantity] = useState("1")
   const [sellPrice, setSellPrice] = useState("0.1")
+  const [showGuide, setShowGuide] = useState(false)
+
+  // Check if user has seen the guide before
+  useEffect(() => {
+    const hasSeenGuide = localStorage.getItem('inventory-guide-seen')
+    if (!hasSeenGuide && walletAddress) {
+      setShowGuide(true)
+    }
+  }, [walletAddress])
+
+  const handleCloseGuide = (dontShowAgain = false) => {
+    if (dontShowAgain) {
+      localStorage.setItem('inventory-guide-seen', 'true')
+    }
+    setShowGuide(false)
+  }
 
   // Fetch real inventory data
   const { state: inventoryState } = useEtherstore({
@@ -86,12 +104,38 @@ export default function MarketplaceInventory() {
         listenEvents: [
           {
             name: "ItemMoved",
+            args: {
+              from: walletAddress ? [walletAddress] : [],
+              to: walletAddress ? [walletAddress] : [],
+            }
           },
           {
             name: "ItemAdded",
+            args: {
+              from: walletAddress ? [walletAddress] : [],
+              to: walletAddress ? [walletAddress] : [],
+            }
           },
           {
             name: "ItemRemoved",
+            args: {
+              from: walletAddress ? [walletAddress] : [],
+              to: walletAddress ? [walletAddress] : [],
+            }
+          },
+          {
+            name: "AskPlaced",
+            contractAddress: MarketplaceAddress,
+            args: {
+              seller: walletAddress ? [walletAddress] : [],
+            }
+          },
+          {
+            name: "BidPlaced",
+            contractAddress: MarketplaceAddress,
+            args: {
+              buyer: walletAddress ? [walletAddress] : [],
+            }
           },
         ],
       },
@@ -181,7 +225,7 @@ export default function MarketplaceInventory() {
         item.amount = Number(decodeValue(item.amount))
       }
       if (item.itemId === 0) continue
-      const itemName = blockTypeNames[item.itemId] || `item ${item.itemId}`
+      const itemName = blockTypeNames[item.itemId & 0x3ff] || `item ${item.itemId & 0x3ff}`
       const imageName = blockImages[itemName]
       const existing = groupedItems.get(item.itemId)
       
@@ -238,6 +282,9 @@ export default function MarketplaceInventory() {
       // Reset form after successful transaction
       setSellQuantity("1")
       setSellPrice("0.1")
+    } else {
+      // Throw error so AnimatedButton shows error state
+      throw new Error('Transaction failed')
     }
   }
 
@@ -264,9 +311,80 @@ export default function MarketplaceInventory() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <MarketplaceHeader title="inventory" showBackToMarketplace={true} />
-      <div className="max-w-6xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-background relative">
+      {/* Particles Background */}
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={80}
+        ease={80}
+        color="#10b981"
+        refresh={false}
+      />
+      
+      <div className="relative z-10">
+        <MarketplaceHeader title="inventory" showBackToMarketplace={true} />
+        
+        {/* Help Button */}
+        <div className="max-w-6xl mx-auto px-6 pt-4">
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={() => setShowGuide(true)}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+            >
+              <span>❓</span>
+              need help selling?
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="max-w-6xl mx-auto px-6 py-8 relative z-10">
+
+        {/* Inline Guide */}
+        {showGuide && (
+          <Card className="mb-4 border-primary/20 bg-primary/5">
+            <CardContent>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-medium">📦 how to sell:</span>
+                  </div>
+                  <div className="flex flex-wrap gap-4 text-xs text-muted-foreground mb-3">
+                    <span><strong>1.</strong> select item</span>
+                    <span><strong>2.</strong> set qty & price</span>
+                    <span><strong>3.</strong> click sell</span>
+                    <span>💡 check market data for pricing</span>
+                    <span>⚠️ need help? ask in <a href="https://discord.gg/your-discord" target="_blank" rel="noopener noreferrer" className="underline">discord</a></span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleCloseGuide(false)}
+                      className="px-2 py-1 text-xs bg-background border rounded hover:bg-muted transition-colors"
+                    >
+                      got it
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleCloseGuide(true)}
+                      className="px-2 py-1 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors"
+                    >
+                      don't show again
+                    </button>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCloseGuide()}
+                  className="text-muted-foreground hover:text-foreground transition-colors text-sm"
+                  aria-label="Close guide"
+                >
+                  ✕
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Inventory Grid */}

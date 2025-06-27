@@ -8,6 +8,7 @@ import { Input } from "../components/ui/input"
 import { useTransactionToast } from "@/hooks/useTransactionToast"
 import { OrderBook } from "../components/marketplace/OrderBook"
 import { MarketplaceHeader } from "../components/marketplace/MarketplaceHeader"
+import { Particles } from "../components/magicui/particles"
 import { useSession as useSessionProvider } from "@/providers/SessionProvider"
 import { MarketplaceAddress } from "@/contracts/MarketplaceAddress"
 import { MarketplaceAbi } from "@/contracts/MarketplaceAbi"
@@ -231,15 +232,26 @@ export default function MarketplaceItemPage() {
     hasSufficientBalanceForBid
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <MarketplaceHeader 
-        title="chunked marketplace" 
-        showBackToMarketplace={true} 
+    <div className="min-h-screen bg-background relative">
+      {/* Particles Background */}
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={120}
+        ease={80}
+        color="#3b82f6"
+        refresh={false}
       />
+      
+      {/* Header */}
+      <div className="relative z-10">
+        <MarketplaceHeader 
+          title="chunked marketplace" 
+          showBackToMarketplace={true} 
+        />
+      </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="space-y-8">
           {/* Top Section: Item Info (Left) and Order Book (Right) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

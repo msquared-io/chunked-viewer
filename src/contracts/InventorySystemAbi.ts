@@ -649,11 +649,6 @@ export const InventorySystemAbi = [
             "type": "uint256"
           },
           {
-            "internalType": "string",
-            "name": "name",
-            "type": "string"
-          },
-          {
             "internalType": "uint16",
             "name": "durability",
             "type": "uint16"

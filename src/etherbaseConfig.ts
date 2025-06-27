@@ -16,7 +16,7 @@ export const etherbaseConfig: EtherbaseConfig = {
   // privateKey:
   // "0x0c9a44c9e7778f9f3132ab2ad581b1473f84683e6b42da3938160dc602ee29d0",
   useBackend: true,
-  debug: true,
+  debug: false,
   // optimized: {
   //   enabled: true,
   //   streamingCompression: false,

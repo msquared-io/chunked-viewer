@@ -10,12 +10,12 @@ interface BlockStatsProps {
 export function BlockStats({ title, items }: BlockStatsProps) {
   const getItemKey = (item: BlockCount | ItemCount): string => {
     const type = "blockType" in item ? item.blockType : item.itemType
-    return (type & 0xffff).toString()
+    return (type & 0x3ff).toString()
   }
 
   const getItemName = (item: BlockCount | ItemCount): string => {
     const type = "blockType" in item ? item.blockType : item.itemType
-    const typeId = type & 0xffff
+    const typeId = type & 0x3ff
     return blockTypeNames[typeId] || `item ${typeId}`
   }
 
