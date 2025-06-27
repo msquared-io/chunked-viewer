@@ -105,36 +105,19 @@ export default function MarketplaceInventory() {
           {
             name: "ItemMoved",
             args: {
-              from: walletAddress ? [walletAddress] : [],
-              to: walletAddress ? [walletAddress] : [],
+              player: walletAddress ? [walletAddress] : [],
             }
           },
           {
             name: "ItemAdded",
             args: {
-              from: walletAddress ? [walletAddress] : [],
-              to: walletAddress ? [walletAddress] : [],
+              player: walletAddress ? [walletAddress] : [],
             }
           },
           {
             name: "ItemRemoved",
             args: {
-              from: walletAddress ? [walletAddress] : [],
-              to: walletAddress ? [walletAddress] : [],
-            }
-          },
-          {
-            name: "AskPlaced",
-            contractAddress: MarketplaceAddress,
-            args: {
-              seller: walletAddress ? [walletAddress] : [],
-            }
-          },
-          {
-            name: "BidPlaced",
-            contractAddress: MarketplaceAddress,
-            args: {
-              buyer: walletAddress ? [walletAddress] : [],
+              player: walletAddress ? [walletAddress] : [],
             }
           },
         ],

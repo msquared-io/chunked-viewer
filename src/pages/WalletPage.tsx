@@ -72,12 +72,21 @@ export default function WalletPage() {
         listenEvents: [
           {
             name: "ItemMoved",
+            args: {
+              player: walletAddress ? [walletAddress] : [],
+            }
           },
           {
             name: "ItemAdded",
+            args: {
+              player: walletAddress ? [walletAddress] : [],
+            }
           },
           {
             name: "ItemRemoved",
+            args: {
+              player: walletAddress ? [walletAddress] : [],
+            }
           },
         ],
       },

@@ -102,9 +102,24 @@ export default function MarketplaceItemPage() {
     options: {
       repoll: {
         listenEvents: [
-          { name: "ItemMoved" },
-          { name: "ItemAdded" },
-          { name: "ItemRemoved" },
+          {
+            name: "ItemMoved",
+            args: {
+              player: walletAddress ? [walletAddress] : [],
+            }
+          },
+          {
+            name: "ItemAdded",
+            args: {
+              player: walletAddress ? [walletAddress] : [],
+            }
+          },
+          {
+            name: "ItemRemoved",
+            args: {
+              player: walletAddress ? [walletAddress] : [],
+            }
+          },
         ],
       },
     },
