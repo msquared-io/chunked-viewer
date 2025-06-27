@@ -8,7 +8,6 @@ import { MarketplaceHeader } from "../components/marketplace/MarketplaceHeader"
 import { AuroraText } from "../components/magicui/aurora-text"
 import { Particles } from "../components/magicui/particles"
 import { useSession } from "@/providers/SessionProvider"
-import { MarketplaceAddress } from "@/contracts/MarketplaceAddress"
 import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
 import { blockTypeNames, blockImages } from "@/constants/blockTypes"
 import { formatNumber } from "@/lib/utils"
@@ -22,27 +21,6 @@ interface MarketplaceItem {
   sellCount: number
   totalActivity: number
   sellStatus: string
-}
-
-interface MarketplaceOrder {
-  price: number
-  qty: number
-  itemId: number
-  itemName: string
-  imageName?: string
-}
-
-interface OrderBookState {
-  getTopAsks: {
-    prices: string[]
-    qtys: string[]
-    itemIds: string[]
-  }
-  getTopBids: {
-    prices: string[]
-    qtys: string[]
-    itemIds: string[]
-  }
 }
 
 interface GlobalTradeStatsState {
@@ -116,37 +94,6 @@ export default function MarketplaceHome() {
     },
   })
 
-  // Fetch top asks and bids from the marketplace
-  const { state: asksState } = useEtherstore({
-    contractAddress: MarketplaceAddress,
-    path: ["getTopAsks"],
-    options: {
-      repoll: {
-        listenEvents: [
-          { name: "AskPlaced" },
-          { name: "BidPlaced" },
-          { name: "Trade" },
-          { name: "OrderCancelled" },
-        ],
-      },
-    },
-  })
-
-  const { state: bidsState } = useEtherstore({
-    contractAddress: MarketplaceAddress,
-    path: ["getTopBids"],
-    options: {
-      repoll: {
-        listenEvents: [
-          { name: "AskPlaced" },
-          { name: "BidPlaced" },
-          { name: "Trade" },
-          { name: "OrderCancelled" },
-        ],
-      },
-    },
-  })
-
   // Process global trade stats and sell stats to create sorted item list
   const gameItems = useMemo(() => {
     const tradeStatsData = (globalTradeStatsState as unknown as GlobalTradeStatsState)?.getGlobalTradeStats
@@ -207,48 +154,6 @@ export default function MarketplaceHome() {
     return items
   }, [globalTradeStatsState, globalSellStatsState])
 
-  const { topAsks, topBids } = useMemo(() => {
-    const asksData = (asksState as unknown as OrderBookState)?.getTopAsks
-    const bidsData = (bidsState as unknown as OrderBookState)?.getTopBids
-
-    console.log("asksData", asksData)
-    console.log("bidsData", bidsData)
-
-    const topAsks: MarketplaceOrder[] = asksData?.prices
-      ? asksData.prices.map((price, i) => {
-          const itemId = Number(decodeValue(asksData.itemIds[i])) || 0
-          const itemName = blockTypeNames[itemId] || `item ${itemId}`
-          const imageName = blockImages[itemName]
-          return {
-            price: Number(decodeValue(price)) || 0,
-            qty: Number(decodeValue(asksData.qtys[i])) || 0,
-            itemId,
-            itemName,
-            imageName,
-          }
-        }).filter(ask => ask.price > 0).slice(0, 10)
-      : []
-
-    const topBids: MarketplaceOrder[] = bidsData?.prices
-      ? bidsData.prices.map((price, i) => {
-          const itemId = Number(decodeValue(bidsData.itemIds[i])) || 0
-          const itemName = blockTypeNames[itemId] || `item ${itemId}`
-          const imageName = blockImages[itemName]
-          return {
-            price: Number(decodeValue(price)) || 0,
-            qty: Number(decodeValue(bidsData.qtys[i])) || 0,
-            itemId,
-            itemName,
-            imageName,
-          }
-        }).filter(bid => bid.price > 0).slice(0, 10)
-      : []
-
-    return { topAsks, topBids }
-  }, [asksState, bidsState])
-  console.log("topAsks", topAsks)
-  console.log("topBids", topBids)
-
   const filtered = gameItems.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase()),
   )
@@ -259,10 +164,6 @@ export default function MarketplaceHome() {
     if (firstMatch) {
       navigate(`/marketplace/${firstMatch.id}`)
     }
-  }
-
-  const handleMarketItemClick = (itemId: number) => {
-    navigate(`/marketplace/${itemId}`)
   }
 
   return (
@@ -281,11 +182,11 @@ export default function MarketplaceHome() {
         <MarketplaceHeader />
       </div>
 
-      {/* Top 50% - Hero Section */}
+      {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-6 pb-8 relative z-10">
-        <div className="min-h-[50vh] grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-          {/* Left Side - Main Content */}
-          <div className="text-center lg:text-left space-y-6">
+        <div className="min-h-[50vh] flex items-center justify-center">
+          {/* Main Content */}
+          <div className="text-center space-y-6 max-w-3xl">
             {/* Main Title */}
             <div className="space-y-4">
               <h1 className="text-5xl md:text-6xl font-bold">
@@ -296,13 +197,13 @@ export default function MarketplaceHome() {
                   Chunked Marketplace
                 </AuroraText>
               </h1>
-              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl">
+              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                 Trade blocks, build wealth, dominate the market
               </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto lg:mx-0">
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
               {walletAddress ? (
                 <>
                   {/* Sell Button */}
@@ -353,127 +254,6 @@ export default function MarketplaceHome() {
                   </div>
                 </Button>
               )}
-            </div>
-          </div>
-
-          {/* Right Side - Live Market Data */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Live Market Data</h2>
-            </div>
-            
-            {/* Top Asks & Bids */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-              {/* Top Asks */}
-              <Card className="border-rose-200 dark:border-rose-800 shadow-lg">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-rose-600 text-sm flex items-center gap-2">
-                    <div className="w-2 h-2 bg-rose-600 rounded-full" />
-                    Top Asks (For Sale)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="max-h-64 overflow-y-auto">
-                    {topAsks.length > 0 ? (
-                      topAsks.slice(0, 6).map((ask, index) => (
-                        <button
-                          key={`ask-${ask.itemId}-${ask.price}-${index}`}
-                          type="button"
-                          className="flex items-center gap-2 p-3 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors border-b last:border-b-0 cursor-pointer w-full text-left"
-                          onClick={() => handleMarketItemClick(ask.itemId)}
-                        >
-                          <div className="w-6 h-6 bg-muted rounded flex items-center justify-center flex-shrink-0">
-                            {ask.imageName ? (
-                              <img
-                                src={`/icons/${ask.imageName}.png`}
-                                alt={ask.itemName}
-                                className="w-5 h-5 object-contain"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none'
-                                  e.currentTarget.nextElementSibling?.classList.remove('hidden')
-                                }}
-                              />
-                            ) : null}
-                            <span className={`text-muted-foreground text-xs ${ask.imageName ? 'hidden' : ''}`}>
-                              ?
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-xs truncate">{ask.itemName}</p>
-                            <p className="text-xs text-muted-foreground">Qty: {ask.qty}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-rose-600 text-xs">
-                              {formatNumber(ask.price / 1e18)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">STT</p>
-                          </div>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="text-center py-6">
-                        <p className="text-muted-foreground text-xs">No active sell orders</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Top Bids */}
-              <Card className="border-emerald-200 dark:border-emerald-800 shadow-lg">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-emerald-600 text-sm flex items-center gap-2">
-                    <div className="w-2 h-2 bg-emerald-600 rounded-full" />
-                    Top Bids (Wanted)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="max-h-64 overflow-y-auto">
-                    {topBids.length > 0 ? (
-                      topBids.slice(0, 6).map((bid, index) => (
-                        <button
-                          key={`bid-${bid.itemId}-${bid.price}-${index}`}
-                          type="button"
-                          className="flex items-center gap-2 p-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors border-b last:border-b-0 cursor-pointer w-full text-left"
-                          onClick={() => handleMarketItemClick(bid.itemId)}
-                        >
-                          <div className="w-6 h-6 bg-muted rounded flex items-center justify-center flex-shrink-0">
-                            {bid.imageName ? (
-                              <img
-                                src={`/icons/${bid.imageName}.png`}
-                                alt={bid.itemName}
-                                className="w-5 h-5 object-contain"
-                                onError={(e) => {
-                                  e.currentTarget.style.display = 'none'
-                                  e.currentTarget.nextElementSibling?.classList.remove('hidden')
-                                }}
-                              />
-                            ) : null}
-                            <span className={`text-muted-foreground text-xs ${bid.imageName ? 'hidden' : ''}`}>
-                              ?
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-xs truncate">{bid.itemName}</p>
-                            <p className="text-xs text-muted-foreground">Qty: {bid.qty}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-emerald-600 text-xs">
-                              {formatNumber(bid.price / 1e18)}
-                            </p>
-                            <p className="text-xs text-muted-foreground">STT</p>
-                          </div>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="text-center py-6">
-                        <p className="text-muted-foreground text-xs">No active buy orders</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </div>
