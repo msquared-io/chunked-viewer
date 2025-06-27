@@ -2,7 +2,8 @@ import { useState, useMemo } from "react"
 import { useEtherstore, useContract } from "@msquared/etherbase-client"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Input } from "../components/ui/input"
-import { Button } from "../components/ui/button"
+import { AnimatedButton } from "../components/ui/animated-button"
+import { useTransactionToast } from "@/hooks/useTransactionToast"
 import { MarketplaceHeader } from "../components/marketplace/MarketplaceHeader"
 import { useSession } from "@/providers/SessionProvider"
 import { MarketplaceAddress } from "@/contracts/MarketplaceAddress"
@@ -71,6 +72,7 @@ function decodeValue(value: string) {
 
 export default function MarketplaceInventory() {
   const { walletAddress } = useSession()
+  const { executeTransaction } = useTransactionToast()
   const [selectedItem, setSelectedItem] = useState<MarketplaceInventoryItem | null>(null)
   const [sellQuantity, setSellQuantity] = useState("1")
   const [sellPrice, setSellPrice] = useState("0.1")
@@ -213,21 +215,29 @@ export default function MarketplaceInventory() {
   const handleSell = async () => {
     if (!selectedItem || !sellQuantity || !sellPrice) return
 
-    try {
-      await execute({
+    const totalValue = formatNumber(Number(sellQuantity) * Number(sellPrice))
+    
+    const result = await executeTransaction(
+      () => execute({
         methodName: "placeAsk",
         args: {
           itemId: BigInt(selectedItem.itemId),
           qty: BigInt(sellQuantity),
           price: BigInt(Math.floor(Number(sellPrice) * 1e18)),
         },
-      })
+      }),
+      {
+        successTitle: 'Item listed for sale!',
+        successMessage: `Listed ${sellQuantity} ${selectedItem.name} for ${formatNumber(Number(sellPrice))} STT each (${totalValue} STT total)`,
+        errorTitle: 'Failed to list item',
+        errorMessage: 'Please try again'
+      }
+    )
 
+    if (result) {
       // Reset form after successful transaction
-      setSellQuantity("")
-      setSellPrice("")
-    } catch (error) {
-      console.error("Failed to place ask:", error)
+      setSellQuantity("1")
+      setSellPrice("0.1")
     }
   }
 
@@ -396,13 +406,15 @@ export default function MarketplaceInventory() {
                       </div>
                     )}
 
-                    <Button
+                    <AnimatedButton
                       onClick={handleSell}
                       disabled={!isValidSell}
                       className="w-full"
+                      loadingText="listing..."
+                      successText="listed!"
                     >
                       sell
-                    </Button>
+                    </AnimatedButton>
                   </div>
                 </>
               ) : (

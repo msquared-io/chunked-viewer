@@ -1,3 +1,13 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [
+        { "type": "host", "value": "marketplace.chunked.xyz" }
+      ],
+      "destination": "/marketplace"
+    },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

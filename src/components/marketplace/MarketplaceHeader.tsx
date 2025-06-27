@@ -5,6 +5,8 @@ import { useSession } from "@msquared/etherbase-client"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
+import { AnimatedButton } from "../ui/animated-button"
+import { useTransactionToast } from "@/hooks/useTransactionToast"
 import { formatNumber } from "@/lib/utils"
 
 interface MarketplaceHeaderProps {
@@ -17,6 +19,7 @@ export function MarketplaceHeader({
   showBackToMarketplace = false 
 }: MarketplaceHeaderProps) {
   const { walletAddress, logout, ethereumWallet } = useSessionProvider()
+  const { executeBooleanTransaction } = useTransactionToast()
   
   // Session balance state
   const [sessionBalance, setSessionBalance] = useState<bigint | null>(null)
@@ -33,8 +36,6 @@ export function MarketplaceHeader({
   // Form states
   const [depositAmount, setDepositAmount] = useState("0.01")
   const [withdrawAmount, setWithdrawAmount] = useState("0.01")
-  const [isDepositing, setIsDepositing] = useState(false)
-  const [isWithdrawing, setIsWithdrawing] = useState(false)
 
   // Use the etherbase session hook
   const { 
@@ -102,11 +103,19 @@ export function MarketplaceHeader({
   const handleDeposit = async () => {
     if (!depositAmount || !walletAddress || !hasExternalWallet) return
 
-    setIsDepositing(true)
-    try {
-      const amountInWei = BigInt(Math.floor(Number(depositAmount) * 1e18))
-      await topUpSession(amountInWei)
-      
+    const amountInWei = BigInt(Math.floor(Number(depositAmount) * 1e18))
+    
+    const success = await executeBooleanTransaction(
+      () => topUpSession(amountInWei),
+      {
+        successTitle: 'Deposit successful!',
+        successMessage: `Added ${formatNumber(Number(depositAmount))} STT to your session`,
+        errorTitle: 'Deposit failed',
+        errorMessage: 'Please try again or check your wallet connection'
+      }
+    )
+    
+    if (success) {
       // Refresh balances after successful deposit
       await loadSessionBalance()
       await loadWalletBalance()
@@ -115,21 +124,25 @@ export function MarketplaceHeader({
       // Reset and close
       setDepositAmount("0.01")
       setDepositDialogOpen(false)
-    } catch (error) {
-      console.error("Failed to deposit:", error)
-    } finally {
-      setIsDepositing(false)
     }
   }
 
   const handleWithdraw = async () => {
     if (!withdrawAmount || !walletAddress) return
 
-    setIsWithdrawing(true)
-    try {
-      const amountInWei = BigInt(Math.floor(Number(withdrawAmount) * 1e18))
-      await withdrawFromSession(amountInWei)
-      
+    const amountInWei = BigInt(Math.floor(Number(withdrawAmount) * 1e18))
+    
+    const success = await executeBooleanTransaction(
+      () => withdrawFromSession(amountInWei),
+      {
+        successTitle: 'Withdrawal successful!',
+        successMessage: `Withdrew ${formatNumber(Number(withdrawAmount))} STT from your session`,
+        errorTitle: 'Withdrawal failed',
+        errorMessage: 'Please check your session balance and try again'
+      }
+    )
+    
+    if (success) {
       // Refresh balances after successful withdrawal
       await loadSessionBalance()
       await loadWalletBalance()
@@ -138,17 +151,15 @@ export function MarketplaceHeader({
       // Reset and close
       setWithdrawAmount("0.01")
       setWithdrawDialogOpen(false)
-    } catch (error) {
-      console.error("Failed to withdraw:", error)
-    } finally {
-      setIsWithdrawing(false)
     }
   }
 
   const isValidDeposit = depositAmount && 
     Number(depositAmount) > 0 && 
     walletAddress && 
-    hasExternalWallet
+    hasExternalWallet &&
+    walletBalance &&
+    BigInt(Math.floor(Number(depositAmount) * 1e18)) <= walletBalance
 
   const isValidWithdraw = withdrawAmount && 
     Number(withdrawAmount) > 0 && 
@@ -354,15 +365,17 @@ export function MarketplaceHeader({
                 >
                   Cancel
                 </Button>
-                <Button
+                <AnimatedButton
                   onClick={handleDeposit}
-                  disabled={!isValidDeposit || isDepositing || 
+                  disabled={!isValidDeposit || 
                     Boolean(walletBalance && depositAmount && 
                      BigInt(Math.floor(Number(depositAmount) * 1e18)) > walletBalance)}
                   className="flex-1 bg-purple-600 hover:bg-purple-700"
+                  loadingText="depositing..."
+                  successText="deposited!"
                 >
-                  {isDepositing ? "depositing..." : "deposit"}
-                </Button>
+                  deposit
+                </AnimatedButton>
               </div>
             </div>
           ) : (
@@ -439,13 +452,15 @@ export function MarketplaceHeader({
               >
                 Cancel
               </Button>
-              <Button
+              <AnimatedButton
                 onClick={handleWithdraw}
-                disabled={!isValidWithdraw || isWithdrawing}
+                disabled={!isValidWithdraw}
                 className="flex-1 bg-orange-600 hover:bg-orange-700"
+                loadingText="withdrawing..."
+                successText="withdrawn!"
               >
-                {isWithdrawing ? "withdrawing..." : "withdraw"}
-              </Button>
+                withdraw
+              </AnimatedButton>
             </div>
           </div>
         </DialogContent>

@@ -17,7 +17,7 @@ These hooks follow the React Hooks pattern and must be used within React compone
 **Return Object Properties:**
 
 - `read`: `<TMethodName extends TAbi extends Abi ? ExtractAbiFunctionNames<TAbi> : string>(props: TAbi extends Abi ? { methodName: TMethodName; args: MethodArgs<...>; } : { ...; }) => Promise<...>`
-- `execute`: `<TMethodName extends TAbi extends Abi ? ExtractAbiFunctionNames<TAbi> : string>(props: TAbi extends Abi ? { methodName: TMethodName; args: MethodArgs<...>; } : { ...; }) => Promise<...>`
+- `execute`: `<TMethodName extends TAbi extends Abi ? ExtractAbiFunctionNames<TAbi> : string>(props: TAbi extends Abi ? { methodName: TMethodName; args: MethodArgs<...>; value?: bigint | undefined; } : { ...; }) => Promise<...>`
 - `subscribeToState`: `(props: { onStateChange: (state: EtherstoreState) => void; options?: StateSubscriptionOptions | undefined; path?: (string | string[])[] | undefined; paths?: string[][] | undefined; resubscribeOnReconnect?: boolean | undefined; }) => Promise<...>`
 - `subscribeToEvents`: `(props: { events: Event<TAbi>[]; onEvent: (event: EtherbaseEvent<TAbi>) => void; maxEventsPerBlock?: number | undefined; }) => { unsubscribe: () => void; isSubscribed: () => boolean; getError: () => string | undefined; }`
 - `error`: `string | undefined`
@@ -93,11 +93,11 @@ Similar to useMemo but with deep equality checking.
 
 - `param`: `Readonly<{ contractAddress: `0x${string}`; abi?: TAbi | undefined; }>`
 
-**Returns:** `{ execute: ({ methodName, args, }: { methodName: TAbi extends Abi ? Extract<TAbi[number], { type: "function"; }>["name"] : string; args: Record<string, unknown>; }) => Promise<...>; }`
+**Returns:** `{ execute: ({ methodName, args, value, }: { methodName: TAbi extends Abi ? Extract<TAbi[number], { type: "function"; }>["name"] : string; args: Record<string, unknown>; value?: bigint | undefined; }) => Promise<...>; }`
 
 **Return Object Properties:**
 
-- `execute`: `({ methodName, args, }: { methodName: TAbi extends Abi ? Extract<TAbi[number], { type: "function"; }>["name"] : string; args: Record<string, unknown>; }) => Promise<unknown>`
+- `execute`: `({ methodName, args, value, }: { methodName: TAbi extends Abi ? Extract<TAbi[number], { type: "function"; }>["name"] : string; args: Record<string, unknown>; value?: bigint | undefined; }) => Promise<...>`
 
 ---
 
@@ -208,10 +208,10 @@ Hook for managing Etherbase sessions - provides session information and methods 
 - `isLoading`: `boolean` - Whether the hook is currently loading session data
 - `error`: `string | null` - Error message if any operation failed
 - `refreshSession`: `() => Promise<void>` - Refreshes the current session information including balance
-- `topUpSession`: `(amount: bigint) => Promise<string>` - Adds ETH to the current session balance. Returns transaction hash.
-- `withdrawFromSession`: `(amount: bigint) => Promise<string>` - Withdraws ETH from the current session balance. Returns transaction hash.
+- `topUpSession`: `(amount: bigint) => Promise<boolean>` - Adds ETH to the current session balance. Returns true on success, false on failure.
+- `withdrawFromSession`: `(amount: bigint) => Promise<boolean>` - Withdraws ETH from the current session balance. Returns true on success, false on failure.
 - `clearCache`: `() => void` - Clears the session cache and resets session state
-- `formatBalance`: `(balance: bigint) => string` - Formats a balance value for display (converts wei to ETH)
+- `getSessionBalance`: `() => Promise<bigint>` - Gets the session balance from the SessionManager contract
 
 ---
 
@@ -513,6 +513,12 @@ Session information containing session ID, address, and balance
 
 ---
 
+### TransactionResult
+
+`import { TransactionResult } from "@msquared/etherbase-client"`
+
+---
+
 ### UpdateStateProps
 
 `import { UpdateStateProps } from "@msquared/etherbase-client"`
@@ -782,19 +788,11 @@ Deep merges state object 'source' into 'target'
 
 ---
 
-### getSessionBalance
-
-`import { getSessionBalance } from "@msquared/etherbase-client"`
-
-**Returns:** `Promise<bigint>`
-
----
-
 ### getSessionInfo
 
 `import { getSessionInfo } from "@msquared/etherbase-client"`
 
-**Returns:** `{ sessionId: string; sessionAddress: string; sessionManagerAddress: string; } | null`
+**Returns:** `Promise<{ sessionId: string; sessionAddress: string; sessionManagerAddress: string; } | null>`
 
 ---
 

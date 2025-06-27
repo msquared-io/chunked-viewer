@@ -3,7 +3,9 @@ import { useParams } from "react-router-dom"
 import { useContract, useEtherstore, useSession } from "@msquared/etherbase-client"
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import { Button } from "../components/ui/button"
+import { AnimatedButton } from "../components/ui/animated-button"
 import { Input } from "../components/ui/input"
+import { useTransactionToast } from "@/hooks/useTransactionToast"
 import { OrderBook } from "../components/marketplace/OrderBook"
 import { MarketplaceHeader } from "../components/marketplace/MarketplaceHeader"
 import { useSession as useSessionProvider } from "@/providers/SessionProvider"
@@ -51,6 +53,7 @@ export default function MarketplaceItemPage() {
   const { itemId } = useParams<{ itemId: string }>()
   const numericItemId = Number(itemId)
   const { walletAddress } = useSessionProvider()
+  const { executeTransaction } = useTransactionToast()
   
   // State for ask selection and buying
   const [selectedAsk, setSelectedAsk] = useState<{ price: number; qty: number; orderId: number } | null>(null)
@@ -143,24 +146,32 @@ export default function MarketplaceItemPage() {
   const handleBuyAsk = async () => {
     if (!selectedAsk || !buyQuantity || !walletAddress) return
 
-    try {
-      const value = BigInt(Math.floor(Number(selectedAsk.price) * Number(buyQuantity) * 1e18))
-      await execute({
+    const value = BigInt(Math.floor(Number(selectedAsk.price) * Number(buyQuantity) * 1e18))
+    const totalCost = formatNumber(Number(selectedAsk.price) * Number(buyQuantity))
+    
+    const result = await executeTransaction(
+      () => execute({
         methodName: "buyExact",
         args: {
           askId: selectedAsk.orderId,
           qty: BigInt(buyQuantity),
         },
         value,
-      })
+      }),
+      {
+        successTitle: 'Purchase successful!',
+        successMessage: `Bought ${buyQuantity} ${itemName} for ${totalCost} STT`,
+        errorTitle: 'Purchase failed',
+        errorMessage: 'Please check your balance and try again'
+      }
+    )
 
+    if (result) {
       // Reset selection after successful purchase
       setSelectedAsk(null)
       setBuyQuantity("1")
       // Refresh balance after purchase
       loadSessionBalance()
-    } catch (error) {
-      console.error("Failed to buy ask:", error)
     }
   }
 
@@ -169,9 +180,10 @@ export default function MarketplaceItemPage() {
 
     const price = BigInt(Math.floor(Number(bidPrice) * 1e18))
     const value = price * BigInt(bidQuantity)
+    const totalValue = formatNumber(Number(bidPrice) * Number(bidQuantity))
 
-    try {
-      await execute({
+    const result = await executeTransaction(
+      () => execute({
         methodName: "placeBid",
         value,
         args: {
@@ -179,15 +191,21 @@ export default function MarketplaceItemPage() {
           qty: BigInt(bidQuantity),
           price,
         },
-      })
+      }),
+      {
+        successTitle: 'Bid placed successfully!',
+        successMessage: `Placed bid for ${bidQuantity} ${itemName} at ${formatNumber(Number(bidPrice))} STT each (${totalValue} STT total)`,
+        errorTitle: 'Bid failed',
+        errorMessage: 'Please check your balance and try again'
+      }
+    )
 
+    if (result) {
       // Reset form after successful bid
       setBidQuantity("1")
       setBidPrice("0.001")
       // Refresh balance after bid
       loadSessionBalance()
-    } catch (error) {
-      console.error("Failed to place bid:", error)
     }
   }
 
@@ -410,16 +428,18 @@ export default function MarketplaceItemPage() {
                         </div>
                       )}
 
-                      <Button
+                      <AnimatedButton
                         onClick={handleBuyAsk}
                         disabled={!isValidBuy}
                         className={`w-full ${!hasSufficientBalanceForBuy && sessionBalance !== null ? 'bg-orange-600 hover:bg-orange-700' : 'bg-emerald-600 hover:bg-emerald-700'}`}
                         size="lg"
+                        loadingText="buying..."
+                        successText="purchased!"
                       >
                         {!hasSufficientBalanceForBuy && sessionBalance !== null 
                           ? "deposit more funds to buy" 
                           : `buy ${buyQuantity} ${itemName}`}
-                      </Button>
+                      </AnimatedButton>
                     </div>
                   </>
                 ) : (
@@ -549,16 +569,18 @@ export default function MarketplaceItemPage() {
                       </div>
                     )}
 
-                    <Button
+                    <AnimatedButton
                       onClick={handlePlaceBid}
                       disabled={!isValidBid}
                       className={`w-full ${!hasSufficientBalanceForBid && sessionBalance !== null ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}`}
                       size="lg"
+                      loadingText="placing bid..."
+                      successText="bid placed!"
                     >
                       {!hasSufficientBalanceForBid && sessionBalance !== null 
                         ? "deposit more funds to bid" 
                         : "place bid"}
-                    </Button>
+                    </AnimatedButton>
                   </>
                 )}
               </CardContent>
