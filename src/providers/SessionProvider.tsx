@@ -138,9 +138,7 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
   // Use preferred wallet if set, otherwise fall back to default logic
   const wallet = useMemo(
     () =>
-      preferredWallet ||
-      (wallets[0] as ExtendedConnectedWallet) ||
-      embeddedWallet,
+      preferredWallet || embeddedWallet || (wallets[0] as ExtendedConnectedWallet),
     [preferredWallet, wallets, embeddedWallet],
   )
 

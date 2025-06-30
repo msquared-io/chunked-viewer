@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@msquared/etherbase-client": "0.0.0-next.20250627.64b8f4e",
+    "@msquared/etherbase-client": "0.0.0-next.20250630.9e400c4",
     "@privy-io/react-auth": "^2.15.1",
     "@radix-ui/react-slot": "^1.1.2",
     "@shadcn/ui": "^0.0.4",
