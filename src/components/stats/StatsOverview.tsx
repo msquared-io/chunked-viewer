@@ -5,7 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import { BaseStats } from "../../types/stats"
+import type { BaseStats } from "../../types/stats"
+import { formatNumber } from "../../lib/utils"
 
 interface StatsOverviewProps {
   stats: BaseStats
@@ -31,7 +32,10 @@ export function StatsOverview({
               total blocks/items
             </p>
             <p className="text-3xl font-bold">
-              {stats.totalMined + stats.totalPlaced + stats.totalCrafted}
+              {formatNumber(
+                stats.totalMined + stats.totalPlaced + stats.totalCrafted,
+                0,
+              )}
             </p>
           </div>
           <div className="space-y-1">
@@ -39,26 +43,32 @@ export function StatsOverview({
               <p className="text-sm font-medium text-muted-foreground">
                 total mined
               </p>
-              <p className="text-sm font-medium">{stats.totalMined}</p>
+              <p className="text-sm font-medium">
+                {formatNumber(stats.totalMined, 0)}
+              </p>
             </div>
             <div className="flex justify-between gap-8">
               <p className="text-sm font-medium text-muted-foreground">
                 total placed
               </p>
-              <p className="text-sm font-medium">{stats.totalPlaced}</p>
+              <p className="text-sm font-medium">
+                {formatNumber(stats.totalPlaced, 0)}
+              </p>
             </div>
             <div className="flex justify-between gap-8">
               <p className="text-sm font-medium text-muted-foreground">
                 total crafted
               </p>
-              <p className="text-sm font-medium">{stats.totalCrafted}</p>
+              <p className="text-sm font-medium">
+                {formatNumber(stats.totalCrafted, 0)}
+              </p>
             </div>
             <div className="flex justify-between gap-8">
               <p className="text-sm font-medium text-muted-foreground">
                 total updates
               </p>
               <p className="text-sm font-medium">
-                {stats.totalPlayerUpdates}
+                {formatNumber(stats.totalPlayerUpdates, 0)}
               </p>
             </div>
           </div>

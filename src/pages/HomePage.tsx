@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { Input } from "../components/ui/input"
 import { Button } from "../components/ui/button"
 import {
@@ -14,6 +14,8 @@ import type { GlobalStats, GlobalInventoryStats } from "../types/stats"
 import { StatsOverview } from "../components/stats/StatsOverview"
 import { BlockStats } from "../components/stats/BlockStats"
 import { InventoryStats } from "../components/stats/InventoryStats"
+import { AuroraText } from "../components/magicui/aurora-text"
+import { formatNumber } from "@/lib/utils"
 
 import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
 import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
@@ -107,6 +109,10 @@ export default function HomePage() {
     }
   )?.getGlobalInventoryStats
 
+  const totalTransactions = globalCounter?.totalCount
+    ? decodeValue(globalCounter.totalCount.toString())
+    : 0n
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (walletAddress.trim() && walletAddress.startsWith("0x")) {
@@ -118,8 +124,9 @@ export default function HomePage() {
     <div className="min-h-screen flex flex-col items-center bg-background p-4">
       <div className="w-full max-w-5xl">
         {/* Title Section */}
-        <div className="flex justify-center mb-8">
-          <Card className="w-full">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+          {/* Main Title Card - 80% */}
+          <Card className="md:col-span-4">
             <CardHeader className="pb-2">
               <CardTitle className="text-3xl font-bold text-center">
                 <a
@@ -141,6 +148,35 @@ export default function HomePage() {
               </CardDescription>
             </CardHeader>
           </Card>
+
+          {/* Marketplace Card - 20% */}
+          <Link
+            to="/marketplace"
+            className="md:col-span-1 group transform transition-transform hover:scale-105"
+          >
+            <Card className="h-full bg-gradient-to-br from-indigo-500/10 to-blue-500/10 border border-primary/20">
+              <CardContent className="p-4 flex flex-col items-center justify-center space-y-1 text-center">
+                {/* Intro text */}
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground group-hover:text-primary">
+                  visit the
+                </p>
+
+                {/* Aurora text headline */}
+                <AuroraText
+                  colors={["#3b82f6", "#8b5cf6", "#6366f1", "#06b6d4"]}
+                  speed={1.2}
+                  className="text-sm font-semibold"
+                >
+                  chunked marketplace
+                </AuroraText>
+
+                {/* Subtitle */}
+                <p className="text-xs text-muted-foreground group-hover:text-primary/80">
+                  trade blocks →
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* 50/50 Split Row */}
@@ -151,7 +187,7 @@ export default function HomePage() {
               <div className="text-center">
                 <h2 className="text-2xl font-bold mb-2">All Transactions</h2>
                 <p className="text-5xl font-bold text-primary mb-2">
-                  {decodeValue(globalCounter?.totalCount.toString())}
+                  {formatNumber(totalTransactions, 0)}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   Last updated:{" "}

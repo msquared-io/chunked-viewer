@@ -5,11 +5,12 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card"
-import type { InventoryStats, ItemCount } from "../../types/stats"
+import type { InventoryStats as InventoryStatsType, ItemCount } from "../../types/stats"
 import { blockTypeNames } from "../../constants/blockTypes"
+import { formatNumber } from "../../lib/utils"
 
 interface InventoryStatsProps {
-  stats: InventoryStats
+  stats: InventoryStatsType
   title?: string
   description?: string
 }
@@ -70,7 +71,7 @@ export function InventoryStats({
                 <p className="font-medium text-muted-foreground">
                   total minted:
                 </p>
-                <p>{stats.totalMinted}</p>
+                <p>{formatNumber(stats.totalMinted, 0)}</p>
               </div>
               {[...groupedMintedItems]
                 .sort((a, b) => b.count - a.count)
@@ -87,7 +88,7 @@ export function InventoryStats({
                     >
                       {item.name}
                     </a>
-                    <p className="text-muted-foreground">{item.count}</p>
+                    <p className="text-muted-foreground">{formatNumber(item.count, 0)}</p>
                   </div>
                 ))}
             </div>
@@ -101,7 +102,7 @@ export function InventoryStats({
                 <p className="font-medium text-muted-foreground">
                   total burned:
                 </p>
-                <p>{stats.totalBurned}</p>
+                <p>{formatNumber(stats.totalBurned, 0)}</p>
               </div>
               {groupedBurnedItems.length > 0 ? (
                 [...groupedBurnedItems]
@@ -119,7 +120,9 @@ export function InventoryStats({
                       >
                         {item.name}
                       </a>
-                      <p className="text-muted-foreground">{item.count}</p>
+                      <p className="text-muted-foreground">
+                        {formatNumber(item.count, 0)}
+                      </p>
                     </div>
                   ))
               ) : (

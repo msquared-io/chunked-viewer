@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
-import { BlockCount, ItemCount } from "../../types/stats"
+import type { BlockCount, ItemCount } from "../../types/stats"
 import { blockTypeNames } from "../../constants/blockTypes"
+import { formatNumber } from "../../lib/utils"
 
 interface BlockStatsProps {
   title: string
@@ -47,7 +48,9 @@ export function BlockStats({ title, items }: BlockStatsProps) {
                   >
                     {getItemName(item)}
                   </a>
-                  <p className="text-muted-foreground">{item.count}</p>
+                  <p className="text-muted-foreground">
+                    {formatNumber(item.count, 0)}
+                  </p>
                 </div>
               ))
           ) : (
