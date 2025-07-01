@@ -300,7 +300,7 @@ export function MarketplaceHeader({
                       ) : walletBalance !== null ? (
                         `${formatNumber(Number(walletBalance) / 1e18)} STT`
                       ) : (
-                        "error"
+                        "please refresh"
                       )}
                     </span>
                     <Button

@@ -1,2 +1,2 @@
 // Auto-generated address file for Marketplace
-export const MarketplaceAddress = "0x32450297A152510B6F10a3fF72E4b8E0A472c701" as const;
+export const MarketplaceAddress = "0x4eBb69727CfEf712bd43F38E22Ab42bC579A8Afe" as const;

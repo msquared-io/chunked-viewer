@@ -1,4 +1,5 @@
 import React, { useEffect } from "react"
+import { createPortal } from "react-dom"
 
 interface DialogProps {
   open: boolean
@@ -46,8 +47,8 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
   if (!open) return null
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+  const dialogContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
@@ -66,6 +67,9 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
       </div>
     </div>
   )
+
+  // Render the dialog in a portal at the document root
+  return createPortal(dialogContent, document.body)
 }
 
 export function DialogContent({ children, className = "" }: DialogContentProps) {

@@ -149,7 +149,7 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
     null,
   )
   const walletAddress = useMemo(() => wallet?.address as Address, [wallet])
-  const [walletLoading] = useState(false)
+  const [walletLoading, setWalletLoading] = useState(false)
   const [walletLoaded, setWalletLoaded] = useState(false)
   const { createGuestAccount } = useGuestAccounts()
 
@@ -372,6 +372,12 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
     return !!ethereumWallet || !embeddedWallet
   }, [ethereumWallet, embeddedWallet])
 
+
+  const privyGetEmbeddedWallet = useCallback(async () => {
+    return embeddedWallet?.address as Address
+  }, [embeddedWallet])
+
+
   const {
     loginState,
     error,
@@ -386,54 +392,41 @@ function SessionProviderInner({ children }: { children: ReactNode }) {
     autoLogin: false,
     ready: walletsReady && !!privy.user && providerIsReadyIfNeeded,
     signTypedData: signTypedData || (async () => ""),
+    privyGetEmbeddedWallet,
+    privyGetWallets: async () =>
+      readyNoAuth ? wallets.map((w) => w.address as Address) : [],
   })
 
-  // Handle auto login manually to avoid circular dependencies
-  // useEffect(() => {
-  //   if (transport && !loggedIn && loginState === LoginState.NONE) {
-  //     login()
-  //   }
-  // }, [transport, loggedIn, loginState, login])
+  useEffect(() => {
+    if (
+      !embeddedWallet ||
+      !walletsReady ||
+      !privy.user ||
+      walletLoading ||
+      walletLoaded
+    ) {
+      return
+    }
 
-  // useEffect(() => {
-  //   console.log("walletLoading", walletLoading)
-  //   if (
-  //     !embeddedWallet ||
-  //     !walletsReady ||
-  //     !privy.user ||
-  //     walletLoading ||
-  //     walletLoaded
-  //   ) {
-  //     return
-  //   }
+    async function loadWallet() {
+      setWalletLoading(true)
+      try {
+        const provider = await embeddedWallet?.getEthereumProvider()
+        if (provider) {
+          setEthereumWallet(provider)
+          console.log("Wallet loaded successfully:", embeddedWallet?.address)
+          setWalletLoaded(true)
+        }
+      } catch (error) {
+        console.error("Error setting wallet provider:", error)
+        setWalletLoaded(true)
+      } finally {
+        setWalletLoading(false)
+      }
+    }
 
-  //   let cancelled = false
-  //   async function loadWallet() {
-  //     setWalletLoading(true)
-  //     try {
-  //       const provider = await wallet?.getEthereumProvider()
-  //       if (!cancelled && provider) {
-  //         setEthereumWallet(provider)
-  //         console.debug("Wallet loaded successfully:", embeddedWallet?.address)
-  //         setWalletLoaded(true)
-  //       }
-  //     } catch (error) {
-  //       console.error("Error setting wallet provider:", error)
-  //       if (!cancelled) {
-  //         setWalletLoaded(true)
-  //       }
-  //     } finally {
-  //       if (!cancelled) {
-  //         setWalletLoading(false)
-  //       }
-  //     }
-  //   }
-
-  //   loadWallet()
-  //   return () => {
-  //     cancelled = true
-  //   }
-  // }, [embeddedWallet, walletsReady, privy.user, walletLoaded, walletLoading])
+    loadWallet()
+  }, [embeddedWallet, walletsReady, privy.user, walletLoaded, walletLoading, privyGetEmbeddedWallet])
 
   // Debug logging effect
   useEffect(() => {

@@ -262,7 +262,7 @@ export default function MarketplaceHome() {
       <div id="browse-items" className="max-w-7xl mx-auto px-6 py-8 relative z-10">
         <div className="space-y-6">
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">Browse All Items</h2>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">Browse Items to Buy</h2>
                 
                 {/* Search */}
                 <Card className="mb-4 shadow-lg">

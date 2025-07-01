@@ -207,6 +207,12 @@ export default function MarketplaceInventory() {
       if (typeof item.amount === "string") {
         item.amount = Number(decodeValue(item.amount))
       }
+      if (typeof item.itemId === "bigint") {
+        item.itemId = Number(item.itemId)
+      }
+      if (typeof item.amount === "bigint") {
+        item.amount = Number(item.amount)
+      }
       if (item.itemId === 0) continue
       const itemName = blockTypeNames[item.itemId & 0x3ff] || `item ${item.itemId & 0x3ff}`
       const imageName = blockImages[itemName]
