@@ -1,2 +1,2 @@
 // Auto-generated address file for UserStatsSystem
-export const UserStatsSystemAddress = "0xa82723D08707a8bf6C5c68cCfED258cd5eAD4055" as const;
+export const UserStatsSystemAddress = "0xd742cCAd80D7402374f8d7c860F6DC6855F571ad" as const;
