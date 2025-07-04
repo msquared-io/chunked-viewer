@@ -6,7 +6,7 @@
       "has": [
         { "type": "host", "value": "marketplace.chunked.xyz" }
       ],
-      "destination": "/marketplace"
+      "destination": "/index.html?marketplace=true"
     },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
