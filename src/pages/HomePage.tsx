@@ -17,7 +17,7 @@ import { InventoryStats } from "../components/stats/InventoryStats"
 import { AuroraText } from "../components/magicui/aurora-text"
 import { formatNumber } from "@/lib/utils"
 
-import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
+// import { InventorySystemAddress } from "@/contracts/InventorySystemAddress"
 import { UserStatsSystemAddress } from "@/contracts/UserStatsSystemAddress"
 
 interface GlobalCounter {
