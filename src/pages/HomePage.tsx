@@ -71,26 +71,32 @@ export default function HomePage() {
     path: ["getGlobalStats"],
     options: {
       repoll: {
-        listenEvents: [
-          {
-            name: "GlobalCounterUpdated",
-          },
-        ],
+        onAnyContractEvent: false,
       },
     },
+    // options: {
+    //   repoll: {
+    //     listenEvents: [
+    //       {
+    //         name: "GlobalCounterUpdated",
+    //       },
+    //     ],
+    //   },
+    // },
   })
 
 
   const { state: globalInventoryStatsState } = useEtherstore({
-    contractAddress: InventorySystemAddress,
+    contractAddress: UserStatsSystemAddress,
     path: ["getGlobalInventoryStats"],
     options: {
       repoll: {
-        listenEvents: [
-          {
-            name: "GlobalCounterUpdated",
-          },
-        ],
+        onAnyContractEvent: false,
+        // listenEvents: [
+        //   {
+        //     name: "GlobalCounterUpdated",
+        //   },
+        // ],
       },
     },
   })

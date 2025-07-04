@@ -41,11 +41,12 @@ export default function WalletPage() {
     path: ["getUserStats", walletAddress ?? ""],
     options: {
       repoll: {
-        listenEvents: [
-          {
-            name: "GlobalCounterUpdated",
-          },
-        ],
+        onAnyContractEvent: false,
+        // listenEvents: [
+        //   {
+        //     name: "GlobalCounterUpdated",
+        //   },
+        // ],
       },
     },
   })
@@ -55,11 +56,12 @@ export default function WalletPage() {
     path: ["getUserInventoryStats", walletAddress ?? ""],
     options: {
       repoll: {
-        listenEvents: [
-          {
-            name: "GlobalCounterUpdated",
-          },
-        ],
+        onAnyContractEvent: false,
+        // listenEvents: [
+        //   {
+        //     name: "GlobalCounterUpdated",
+        //   },
+        // ],
       },
     },
   })
@@ -222,7 +224,7 @@ export default function WalletPage() {
             </CardHeader>
             <CardContent>
               <div className="max-w-2xl mx-auto p-8">
-                {/* Quick Access Row (1 row x 9 columns) */}
+                                                {/* Quick Access Row (1 row x 9 columns) */}
                 <div className="grid grid-cols-9 gap-2 mb-6 relative">
                   {Array.from({ length: 9 }).map((_, index) => {
                     const slotIndex = index
@@ -238,7 +240,7 @@ export default function WalletPage() {
                         key={slotId}
                         className={`aspect-square ${item ? "bg-black/5 dark:bg-white/90" : "bg-black/10 dark:bg-white/75"} hover:bg-black/10 dark:hover:bg-white/80 rounded-lg shadow-sm relative group transition-all duration-200 p-0.5`}
                       >
-                        {item ? (
+                        {item && Number(item.itemId) !== 0 ? (
                           <div className="absolute inset-0 p-0.5">
                             <div className="w-full h-full flex items-center justify-center -space-y-1">
                               <div className="text-center leading-[0.75]">
@@ -248,8 +250,8 @@ export default function WalletPage() {
                                   rel="noopener noreferrer"
                                   className="font-medium text-[9px] text-black/90 dark:text-black/80 hover:underline"
                                 >
-                                  {blockTypeNames[item.itemId & 0x3ff] ||
-                                    `item ${item.itemId & 0x3ff}`}
+                                  {blockTypeNames[Number(item.itemId) & 0x3ff] ||
+                                    `item ${Number(item.itemId) & 0x3ff}`}
                                 </a>
                               </div>
                             </div>
@@ -300,7 +302,7 @@ export default function WalletPage() {
                         key={slotId}
                         className={`aspect-square ${item ? "bg-black/5 dark:bg-white/90" : "bg-black/10 dark:bg-white/75"} hover:bg-black/10 dark:hover:bg-white/80 rounded-lg shadow-sm relative group transition-all duration-200 p-0.5`}
                       >
-                        {item ? (
+                        {item && Number(item.itemId) !== 0 ? (
                           <div className="absolute inset-0 p-0.5">
                             <div className="w-full h-full flex items-center justify-center -space-y-1">
                               <div className="text-center leading-[0.75]">
@@ -310,8 +312,8 @@ export default function WalletPage() {
                                   rel="noopener noreferrer"
                                   className="font-medium text-[9px] text-black/90 dark:text-black/80 hover:underline"
                                 >
-                                  {blockTypeNames[item.itemId & 0x3ff] ||
-                                    `item ${item.itemId & 0x3ff}`}
+                                  {blockTypeNames[Number(item.itemId) & 0x3ff] ||
+                                    `item ${Number(item.itemId) & 0x3ff}`}
                                 </a>
                               </div>
                             </div>

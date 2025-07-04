@@ -27,7 +27,7 @@ export function InventoryStats({
   description = "data about minted and burned items",
 }: InventoryStatsProps) {
   const getItemName = (itemType: number): string => {
-    const typeId = itemType & 0x3ff
+    const typeId = Number(itemType) & 0x3ff
     return blockTypeNames[typeId] || `item ${typeId}`
   }
 

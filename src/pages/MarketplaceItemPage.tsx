@@ -163,6 +163,7 @@ export default function MarketplaceItemPage() {
     if (!selectedAsk || !buyQuantity || !walletAddress) return
 
     const value = BigInt(Math.floor(Number(selectedAsk.price) * Number(buyQuantity) * 1e18))
+    console.log("value", value)
     const totalCost = formatNumber(Number(selectedAsk.price) * Number(buyQuantity))
     
     const result = await executeTransaction(
